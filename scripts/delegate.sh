@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Giao 1 task card cho Gemini worker (git worktree riêng ../wt-<ID>, base lưu ở refs/ai/base/<ID>).
+# Giao 1 task card cho Gemini worker qua Antigravity CLI `agy` (git worktree riêng ../wt-<ID>, base lưu ở refs/ai/base/<ID>).
 # Usage: scripts/delegate.sh <ID> [--resume] [--effort low|high]
 # Exit:  0 DONE + scope + gate + trace PASS | 2 BLOCKED (có câu hỏi) | 3 DONE nhưng scope/gate/trace FAIL
-#        4 FAILED / không có report | 1 lỗi sử dụng / task card không hợp lệ / vượt MAX_REWORK
+#        4 FAILED / không có report / AI tự đổi HEAD-nhánh worktree không khôi phục được | 1 lỗi sử dụng / task card không hợp lệ / vượt MAX_REWORK
 set -uo pipefail
 ID="${1:?Usage: delegate.sh <ID> [--resume] [--effort low|high]}"; shift
 # shellcheck source=lib.sh
@@ -20,8 +20,9 @@ validate_task
 SKILLS="$(field skills)"
 AUTOFIX="$(field autofix_max)"; AUTOFIX="${AUTOFIX:-$AUTOFIX_MAX_DEFAULT}"
 [[ "$CLASS" == C ]] && is_code && { EFFORT=high; AUTOFIX=0; }      # Class C: luôn high, không tự sửa
-case "$EFFORT" in high) MODEL="$GEMINI_MODEL_HIGH" ;; low) MODEL="$GEMINI_MODEL_LOW" ;;
+case "$EFFORT" in high) MODEL="$AGY_MODEL_HIGH" ;; low) MODEL="$AGY_MODEL_LOW" ;;
   *) echo "✖ effort phải là low|high"; exit 1 ;; esac
+agy_preflight "$MODEL"
 
 if [[ $RESUME -eq 1 ]]; then
   N_RW="$(rework_count)"
@@ -52,7 +53,7 @@ if [[ -n "${PROTOS// /}" ]]; then AUTO+=" comm-safety"; for p in $PROTOS; do AUT
 AUTO+=" effort-$EFFORT"
 
 MISSING=""
-for s in $AUTO $(echo "$SKILLS" | tr ',' ' '); do [[ -f ".gemini/skills/$s/SKILL.md" ]] || MISSING+=" $s"; done
+for s in $AUTO $(echo "$SKILLS" | tr ',' ' '); do [[ -f ".agents/skills/$s/SKILL.md" ]] || MISSING+=" $s"; done
 DECS=""
 for d in $(field decisions | tr ',' ' '); do
   f="$(ls .ai/decisions/"$d"*.md 2>/dev/null | head -1)"; [[ -n "$f" ]] && DECS+=" $f" || MISSING+=" decision:$d"
@@ -60,7 +61,7 @@ done
 [[ -n "$MISSING" ]] && { echo "✖ Task card tham chiếu skill/ADR không tồn tại:$MISSING"; exit 1; }
 
 ensure_worktree
-rm -f "$WT/.ai-out/report.md" "$WT/.ai-out/question.md"
+rm -f "$WT/.ai-out/report.md" "$WT/.ai-out/question.md" "$WT/.ai-out/prompt.md"
 
 # ---- Ghép prompt ----
 PROMPT_FILE=".ai/logs/$ID.prompt.md"
@@ -69,7 +70,7 @@ declare -A SEEN
   echo "# BẠN LÀ GEMINI WORKER của dự án thiết bị y tế (robot phẫu thuật). Thực thi ĐÚNG task, không tự quyết."
   for s in $AUTO $(echo "$SKILLS" | tr ',' ' '); do
     [[ -n "${SEEN[$s]:-}" ]] && continue; SEEN[$s]=1
-    printf '\n\n<!-- ===== SKILL: %s ===== -->\n' "$s"; strip_fm ".gemini/skills/$s/SKILL.md"
+    printf '\n\n<!-- ===== SKILL: %s ===== -->\n' "$s"; strip_fm ".agents/skills/$s/SKILL.md"
   done
   for f in $DECS; do printf '\n\n# ===== QUYẾT ĐỊNH ĐÃ CHỐT (%s) =====\n' "$f"; cat "$f"; done
   DD="$(field detailed_design)"
@@ -81,44 +82,69 @@ declare -A SEEN
   fi
   printf '\n\n# ===== THAM SỐ PHIÊN =====\n- task_id: %s\n- type: %s\n- platform: %s\n- safety_class: %s\n- effort: %s\n- autofix_max: %s\n- resume: %s\n' \
     "$ID" "$TYPE" "$PLATFORM" "${CLASS:-n/a}" "$EFFORT" "$AUTOFIX" "$RESUME"
-  printf -- '- Lệnh build nhanh: ./scripts/gate.sh --build-only --platform %s --class %s\n' "$PLATFORM" "${CLASS:-A}"
-  printf -- '- Lệnh gate đầy đủ: ./scripts/gate.sh --platform %s --class %s --base %s\n' "$PLATFORM" "${CLASS:-A}" "$BASE"
-  echo "- KHÔNG git commit/push/reset: delegate.sh tự commit sau mỗi round. Chỉ sửa file trong 'Files được phép' — script tự kiểm tra."
+  echo "- Bạn KHÔNG có quyền chạy lệnh shell (build, test, git, python...), mạng, subagent, hay ghi đường dẫn được bảo vệ: hook"
+  echo "  vsur-policy chặn (có thể kết thúc phiên). Đừng thử lách."
+  echo "  Chỉ dùng công cụ đọc/tìm/sửa file. Sau khi bạn ghi report, delegate.sh tự chạy scope + gate (build, test, phân tích tĩnh,"
+  echo "  coverage) + trace; nếu FAIL, kết quả được gửi lại cho bạn trong .ai-out/checks.txt (skill build-protocol)."
+  echo "- delegate.sh tự commit sau mỗi round. Chỉ sửa file trong 'Files được phép' — script tự kiểm tra."
   [[ $RESUME -eq 1 ]] && echo "- Code các round trước ĐÃ có trong worktree. Chỉ làm phần Lead yêu cầu ở round mới nhất."
 } > "$PROMPT_FILE"
 
-TOOL_VER="gemini-cli $(gemini --version 2>/dev/null | head -1)"
-SANDBOX=(); [[ -n "${GEMINI_SANDBOX:-}" ]] && SANDBOX=(--sandbox)
+cp "$PROMPT_FILE" "$WT/.ai-out/prompt.md"     # agy đọc prompt từ file trong worktree (.ai-out/ bị .gitignore)
+rm -f "$WT/.ai-out/checks.txt" "$WT/.ai-out/gate.log"
+TOOL_VER="agy $(agy_version)"
 echo "▶ $ID | type=$TYPE platform=$PLATFORM class=${CLASS:-n/a} | effort=$EFFORT model=$MODEL autofix=$AUTOFIX resume=$RESUME round=$(round_no)"
-SECONDS=0
-( cd "$WT" && timeout "$GEMINI_TIMEOUT" gemini -m "$MODEL" --yolo "${SANDBOX[@]}" \
-    -p "Thực hiện CHÍNH XÁC theo hướng dẫn trong input. Kết thúc bằng việc ghi .ai-out/report.md." \
-    < "$ROOT/$PROMPT_FILE" ) > ".ai/logs/$ID.log" 2>&1
-GEM_RC=$?
-[[ $GEM_RC -eq 124 ]] && echo "⚠ Gemini timeout sau ${GEMINI_TIMEOUT}s"
+SECONDS=0; GIT_VIOLATION=0; FEEDBACK=0; CID=""; REPORT="$WT/.ai-out/report.md"
+MAX_FEEDBACK=0; is_code && MAX_FEEDBACK=$(( AUTOFIX + 1 ))   # lượt cuối chỉ để worker chuyển sang BLOCKED + question
+MSG="Đọc TOÀN BỘ file .ai-out/prompt.md rồi thực hiện CHÍNH XÁC theo hướng dẫn trong đó. Kết thúc bằng việc ghi .ai-out/report.md."
+while :; do
+  head_snapshot
+  agy_run "$MODEL" accept-edits ".ai/logs/$ID.log" "$MSG" "$CID"
+  CID="${AGY_CID:-$CID}"
+  [[ $AGY_RC -eq 124 ]] && echo "⚠ agy timeout sau ${AGY_TIMEOUT}s"
+  head_guard || { record worker GIT_VIOLATION 4 "$MODEL"; exit 4; }
 
-REPORT="$WT/.ai-out/report.md"
-STATUS=""
-[[ -f "$REPORT" ]] && { cp "$REPORT" ".ai/reports/$ID.md"; STATUS="$(grep -m1 -oE '^STATUS:[[:space:]]*[A-Z]+' "$REPORT" | awk '{print $2}')"; }
-commit_round worker "${STATUS:-NO_REPORT}"     # lưu lịch sử mọi round, kể cả BLOCKED
+  STATUS=""
+  [[ -f "$REPORT" ]] && { cp "$REPORT" ".ai/reports/$ID.md"; STATUS="$(grep -m1 -oE '^STATUS:[[:space:]]*[A-Z]+' "$REPORT" | awk '{print $2}')"; }
+  commit_round worker "${STATUS:-NO_REPORT}"     # lưu lịch sử mọi lượt, kể cả BLOCKED
+  (( GIT_VIOLATION )) && echo "⚠ AI tự chạy lệnh git ghi (script đã gỡ commit, giữ nội dung) — ghi vào hồ sơ review"
 
-if [[ ! -f "$REPORT" ]]; then
-  echo "✖ Không có report (rc=$GEM_RC). 5 dòng cuối log:"; tail -5 ".ai/logs/$ID.log"
-  record worker NO_REPORT 4 "$MODEL"; exit 4
-fi
-if [[ "$STATUS" == "BLOCKED" ]]; then
-  [[ -f "$WT/.ai-out/question.md" ]] && cp "$WT/.ai-out/question.md" ".ai/questions/$ID.md"
-  echo "⏸ BLOCKED — câu hỏi (.ai/questions/$ID.md):"; head -40 ".ai/questions/$ID.md" 2>/dev/null || head -20 ".ai/reports/$ID.md"
-  record worker BLOCKED 2 "$MODEL"; exit 2
-fi
-if [[ "$STATUS" != "DONE" ]]; then
-  echo "✖ STATUS=${STATUS:-?}"; head -20 ".ai/reports/$ID.md"
-  record worker "${STATUS:-UNKNOWN}" 4 "$MODEL"; exit 4
-fi
+  if [[ ! -f "$REPORT" ]]; then
+    rm -f "$WT/.ai-out/prompt.md"
+    echo "✖ Không có report (rc=$AGY_RC)."
+    [[ -n "$AGY_DENIED" ]] && printf '  agy đã chặn (AI cố chạy lệnh/tool không được phép):\n%s' "$AGY_DENIED"
+    record worker NO_REPORT 4 "$MODEL"; exit 4
+  fi
+  if [[ "$STATUS" == "BLOCKED" ]]; then
+    rm -f "$WT/.ai-out/prompt.md"
+    [[ -f "$WT/.ai-out/question.md" ]] && cp "$WT/.ai-out/question.md" ".ai/questions/$ID.md"
+    echo "⏸ BLOCKED — câu hỏi (.ai/questions/$ID.md):"; head -40 ".ai/questions/$ID.md" 2>/dev/null || head -20 ".ai/reports/$ID.md"
+    record worker BLOCKED 2 "$MODEL"; exit 2
+  fi
+  if [[ "$STATUS" != "DONE" ]]; then
+    rm -f "$WT/.ai-out/prompt.md"
+    echo "✖ STATUS=${STATUS:-?}"; head -20 ".ai/reports/$ID.md"
+    record worker "${STATUS:-UNKNOWN}" 4 "$MODEL"; exit 4
+  fi
 
-run_checks; RC=$?
+  run_checks > "$WT/.ai-out/checks.txt" 2>&1; RC=$?
+  (( RC == 0 || FEEDBACK >= MAX_FEEDBACK )) || [[ -z "$CID" ]] && break
+  # Worker không tự build được (agy -p không cho chạy lệnh) → gửi kết quả kiểm tra lại cho worker trong cùng hội thoại
+  FEEDBACK=$(( FEEDBACK + 1 ))
+  cp ".ai/logs/$ID.gate" "$WT/.ai-out/gate.log" 2>/dev/null
+  if (( FEEDBACK <= AUTOFIX )); then
+    RULE="Còn lượt autofix ($FEEDBACK/$AUTOFIX): CHỈ sửa lỗi CƠ HỌC đúng điều kiện của skill build-protocol rồi cập nhật .ai-out/report.md (STATUS: DONE). Lỗi khác → KHÔNG sửa code; ghi .ai-out/question.md và report STATUS: BLOCKED."
+  else
+    RULE="HẾT lượt autofix (autofix_max=$AUTOFIX): KHÔNG sửa code. Ghi .ai-out/question.md (lỗi đã lọc, file:dòng, phương án A/B) và cập nhật .ai-out/report.md với STATUS: BLOCKED."
+  fi
+  echo "↻ scope/gate/trace FAIL → gửi kết quả cho worker (lượt phản hồi $FEEDBACK/$MAX_FEEDBACK)"
+  MSG="delegate.sh đã chạy scope + gate + trace sau report của bạn: FAIL. Đọc .ai-out/checks.txt (tóm tắt) và .ai-out/gate.log (đầy đủ). $RULE Không chạy lệnh shell."
+done
+rm -f "$WT/.ai-out/prompt.md"
+
+cat "$WT/.ai-out/checks.txt"
 echo "■ Diff (git -C $WT diff $BASE HEAD -- <file>):"
 git -C "$WT" diff --stat "$BASE" HEAD | tail -15
-echo "■ Report: .ai/reports/$ID.md | HEAD: $HEAD_SHA | Kết quả: $([[ $RC -eq 0 ]] && echo PASS || echo FAIL)"
+echo "■ Report: .ai/reports/$ID.md | HEAD: $HEAD_SHA | Phản hồi build: $FEEDBACK lượt | Kết quả: $([[ $RC -eq 0 ]] && echo PASS || echo FAIL)"
 record worker DONE "$RC" "$MODEL"
 exit $RC

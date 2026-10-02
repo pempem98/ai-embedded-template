@@ -15,7 +15,7 @@ với coding standard (cpp-/c-embedded-standard, naming-conventions, safety-codi
 6. Không heap sau init; container `StaticVector`, `SpscRing`, `TripleBuffer`, `ByteSpan`.
 7. Tiện ích `byte_order`, `crc` (tham số đầy đủ + preset), `sequence` (modulo).
 8. Test: GoogleTest/GoogleMock (C++), Unity (C); FakeClock; cấu trúc thư mục cố định.
-Chi tiết API: `.gemini/skills/project-conventions/SKILL.md`.
+Chi tiết API: `.agents/skills/project-conventions/SKILL.md`.
 
 ## Hệ quả cho code / test
 - Các header trong `include/common`, `include/osal`, `include/hal`, `include/log`, `include/safety` là OWNER: lead, tạo trong task

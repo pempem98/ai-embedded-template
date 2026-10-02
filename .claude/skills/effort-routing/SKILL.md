@@ -13,7 +13,7 @@ description: Chọn effort low/high cho Gemini (model, độ kỹ) và Claude (m
 
 | | LOW | HIGH |
 |---|---|---|
-| Gemini | GEMINI_MODEL_LOW + skill effort-low | GEMINI_MODEL_HIGH + skill effort-high |
+| Gemini (agy) | AGY_MODEL_LOW (slug gồm mức suy luận) + skill effort-low | AGY_MODEL_HIGH + skill effort-high |
 | Claude review | fw-reviewer-low | fw-reviewer-high (+ fw-safety-assessor nếu C hoặc có RCM) |
 | Claude thiết kế | bình thường | model mạnh nhất + "think hard"/ultrathink (hoặc mức effort cao nếu Claude Code hỗ trợ) |
 | Tài liệu | reg-doc-reviewer | reg-doc-reviewer + bạn đọc phần thay đổi |

@@ -11,7 +11,7 @@ base của task ở `refs/ai/base/<ID>`. Xem diff: `git -C ../wt-<ID> diff refs/
 | 1 | task card không hợp lệ / skill-ADR không tồn tại / vượt MAX_REWORK | sửa task card, hoặc abort |
 | 2 | BLOCKED | /answer |
 | 3 | DONE nhưng scope/gate/trace FAIL | /review (thường REJECT kèm chỉ đạo; vi phạm scope → REJECT) |
-| 4 | FAILED / không report | đọc report; sửa task card hoặc tự làm |
+| 4 | FAILED / không report / `GIT_VIOLATION` | đọc report; sửa task card hoặc tự làm. Output có "agy chặn hành động" → worker cố chạy lệnh shell (không được phép): làm rõ task card, không tự nới quyền |
 
 Task độc lập: chạy nhiều `delegate.sh` song song bằng Bash `run_in_background`, xử lý từng kết quả khi có thông báo.
 

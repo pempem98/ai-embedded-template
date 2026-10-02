@@ -7,7 +7,7 @@ Skill `effort-routing`, `embedded-review`.
 2. Bảng "Issues & xử lý" trong `docs/07-verification/records/*/review.md` (grep `^|`) và các file `answers.md`:
    nhóm lỗi lặp lại, câu hỏi lặp lại.
 3. Đề xuất (dạng diff ngắn, KHÔNG tự áp dụng):
-   - câu hỏi lặp → ADR + dòng trong `.gemini/skills/project-conventions`;
+   - câu hỏi lặp → ADR + dòng trong `.agents/skills/project-conventions`;
    - lỗi lặp → luật mới cho skill Gemini liên quan hoặc rubric `embedded-review`;
    - loại task low hay fail → nâng effort trong `effort-routing`;
    - pattern cấm mới → `scripts/check_banned.py`.

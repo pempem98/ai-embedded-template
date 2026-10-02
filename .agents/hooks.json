@@ -1,0 +1,16 @@
+{
+  "vsur-policy": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 hooks/vsur_policy.py || python hooks/vsur_policy.py",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

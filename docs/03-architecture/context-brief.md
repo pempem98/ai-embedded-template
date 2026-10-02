@@ -24,4 +24,4 @@
 - TBD (setup / teleop / instrument exchange / homing)
 
 ## Quy ước chính
-- Xem `.gemini/skills/project-conventions/SKILL.md` và `.ai/decisions/`.
+- Xem `.agents/skills/project-conventions/SKILL.md` và `.ai/decisions/`.

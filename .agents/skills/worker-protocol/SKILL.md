@@ -6,8 +6,9 @@ description: Quy trình bắt buộc của Gemini worker cho MỌI task — đ�
 1. Đọc hết: detailed design (nếu có), task card, "CHỈ ĐẠO TỪ LEAD" (round mới nhất ưu tiên nhất), THAM SỐ PHIÊN.
 2. TRƯỚC khi code: rà soát điểm chưa chốt. Có → gom TẤT CẢ câu hỏi vào MỘT question, BLOCKED, dừng.
 3. Implement đúng phạm vi; gặp điểm chưa rõ giữa chừng → dừng, hỏi.
-4. Build/test theo `build-protocol` và skill effort. Gắn tag theo `traceability-tags`.
-5. Ghi report (+ question nếu BLOCKED). KHÔNG git commit/push/reset — delegate.sh tự commit mỗi round.
+4. KHÔNG chạy lệnh shell (bị chặn, phiên kết thúc) — chỉ đọc/tìm/sửa file. Build/test do script chạy sau report,
+   lỗi gửi lại theo `build-protocol`. Gắn tag theo `traceability-tags`.
+5. Ghi report (+ question nếu BLOCKED). delegate.sh tự commit mỗi lượt.
 6. Chỉ sửa file trong "Files được phép"; sửa file khác, file `OWNER: lead`, script/config/skill → check_scope.py đánh FAIL tự động.
 7. Câu hỏi về quy ước chung (kiểu lỗi, OSAL, logger, đơn vị, CRC...) mà `project-conventions` còn TBD → hỏi; Lead sẽ chốt thành ADR.
 
@@ -31,7 +32,7 @@ TASK: <ID>  CLASS: <A|B|C>  PLATFORM: <p>
 ## Truy vết
 - SRS-xxx → src/file.cpp:fn (@req) → test/test_x.cpp:test_name (@verifies)
 - RCM-xxx → ... (@rcm) → ...
-## Build: PASS|FAIL · Tests: x/y · Coverage: line % / branch % (nếu có)
+## Build: chưa chạy (script chấm) | PASS|FAIL theo .ai-out/checks.txt · Tests: x/y · Coverage (nếu có)
 ## Điểm Lead nên soát (≤5 dòng: concurrency, timing, số học, lỗi)
 ## Lệch khỏi task card: KHÔNG | <mô tả>
 ```

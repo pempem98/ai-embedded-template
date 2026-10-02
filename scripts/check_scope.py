@@ -10,9 +10,9 @@ Exit 0 OK | 1 vi phạm"""
 import argparse, fnmatch, pathlib, re, subprocess, sys
 
 PROTECTED_PREFIX = ("scripts/", ".ai/templates/", ".ai/tasks/", ".ai/answers/", ".ai/questions/", ".ai/reviews/",
-                    ".ai/reports/", ".ai/deviations/", ".ai/decisions/", ".claude/", ".gemini/", "cmake/",
+                    ".ai/reports/", ".ai/deviations/", ".ai/decisions/", ".claude/", ".agents/", ".gemini/", ".antigravitycli", "cmake/",
                     "docs/07-verification/records/")
-PROTECTED_EXACT = (".ai/config.env", ".ai/metrics.csv", "GEMINI.md", "CLAUDE.md", "CMakeLists.txt", ".clang-tidy",
+PROTECTED_EXACT = (".ai/config.env", ".ai/metrics.csv", "AGENTS.md", "GEMINI.md", "CLAUDE.md", "CMakeLists.txt", ".clang-tidy",
                    ".clang-format", ".gitattributes", ".gitignore")
 
 

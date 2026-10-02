@@ -30,7 +30,7 @@ Mẫu: `.ai/templates/task.md`; ví dụ đầy đủ: `.ai/templates/example-T0
    xử lý lỗi & safe state, context (ISR/thread/priority), bộ nhớ, API OS được dùng; giao tiếp: khung, CRC đầy đủ tham số, counter, timeout, ngưỡng lỗi.
    Quyết định dùng lại nhiều task → ADR + tham chiếu `decisions:` thay vì chép lại.
 4. "Files được phép" chính xác — `check_scope.py` THỰC THI: chỉ dòng `- tạo:` / `- sửa:` / `- xóa:` được tính; glob và thư mục `/` được phép.
-   Gemini không bao giờ được chạm scripts/, .ai/, .gemini/, .claude/, cmake/, CMakeLists.txt gốc (kể cả khi liệt kê).
+   Gemini không bao giờ được chạm scripts/, .ai/, .agents/, .gemini/, .claude/, cmake/, CMakeLists.txt gốc (kể cả khi liệt kê).
    Research/doc: liệt kê file ghi chú/tài liệu được tạo (vd. `- tạo: .ai/notes/T05-biss-encoder.md`).
 5. Tiêu chí chấp nhận kiểm chứng được; Class C nêu thêm tiêu chí §5.5.4 liên quan (fault handling, boundary, init, resource...).
 6. Không giao Gemini: safety supervisor core, state machine safe state, ISR/DMA, đồng bộ RT, cấu hình scheduler/partition,

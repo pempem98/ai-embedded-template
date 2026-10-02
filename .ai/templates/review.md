@@ -5,7 +5,7 @@ REQUIREMENTS: <SRS-...>     RISK_CONTROLS: <RCM-...>     PROTOCOLS: <...>
 BASE_SHA: <git rev-parse refs/ai/base/<ID>>
 REVIEWED_SHA: <git -C ../wt-<ID> rev-parse HEAD — đúng SHA đã review; merge.sh từ chối nếu HEAD khác>
 AI_VERDICT: APPROVE
-AI_REVIEWERS: <fw-reviewer-high (opus), fw-safety-assessor (opus), cross-review (gemini-pro)>
+AI_REVIEWERS: <fw-reviewer-high (opus), fw-safety-assessor (opus), cross-review (AGY_MODEL_HIGH)>
 AI_REVIEW_DATE: <YYYY-MM-DD>
 GATE: PASS (build <platform>+host, test, banned, static analysis, coverage <...>)   SCOPE: PASS   TRACE: PASS
 ROUNDS: <số round / số REWORK>

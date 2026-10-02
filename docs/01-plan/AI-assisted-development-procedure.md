@@ -2,7 +2,7 @@
 Status: Draft — cần QA/RA phê duyệt trước khi dùng cho phần mềm phát hành.
 
 ## 1. Phạm vi
-Mô tả việc dùng công cụ AI (Claude Code: thiết kế/review hỗ trợ, viết code safety-critical có kiểm soát; Gemini CLI: implement/soạn nháp/
+Mô tả việc dùng công cụ AI (Claude Code: thiết kế/review hỗ trợ, viết code safety-critical có kiểm soát; Antigravity CLI `agy` với model Gemini: implement/soạn nháp/
 review chéo) trong vòng đời phần mềm. AI là **công cụ phát triển**, không phải người phê duyệt.
 Trách nhiệm thuộc về kỹ sư có năng lực được chỉ định.
 
@@ -32,7 +32,9 @@ Trách nhiệm thuộc về kỹ sư có năng lực được chỉ định.
 ## 4. Bảo mật thông tin
 - Chỉ dùng gói dịch vụ AI có cam kết không dùng dữ liệu để huấn luyện và điều khoản bảo mật doanh nghiệp. TBD(IT/Legal)
 - Không đưa dữ liệu bệnh nhân, khóa bí mật, thông tin đối tác chưa được phép vào prompt.
-- Gemini worker chạy trong worktree riêng; khuyến nghị bật sandbox (`GEMINI_SANDBOX`) khi hạ tầng cho phép.
+- Gemini worker (qua `agy`) chạy trong worktree riêng, KHÔNG có quyền chạy lệnh shell (chỉ đọc/sửa file — `--mode accept-edits`);
+  build/test/phân tích do script của repo chính chạy. Reviewer chéo chạy `--mode plan` (chỉ đọc).
+  Không dùng chế độ tự duyệt mọi tool. Lệnh git ghi (nếu có) bị phát hiện hậu kiểm (HEAD/nhánh worktree) và bị gỡ/dừng.
 
 ## 5. Việc còn mở & quyết định cần chốt trước pilot
 | # | Câu hỏi / việc | Người quyết | Hiện trạng |

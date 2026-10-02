@@ -9,15 +9,15 @@
 ## 1. Thành phần
 | Nội dung | Nguồn kiểm soát | Thực thi |
 |---|---|---|
-| Luật ngôn ngữ C++ (tham chiếu MISRA C++:2023, AUTOSAR C++14, CERT C++) | `.gemini/skills/cpp-embedded-standard/SKILL.md` | clang-tidy, cppcheck, MISRA tool, review |
-| Luật ngôn ngữ C cho MCU (tham chiếu MISRA C:2012/2023, CERT C) | `.gemini/skills/c-embedded-standard/SKILL.md` | như trên |
-| Lập trình phòng vệ Class B/C | `.gemini/skills/safety-coding/SKILL.md` | review, unit test |
-| Đặt tên, ID, file, commit message | `.gemini/skills/naming-conventions/SKILL.md` | clang-tidy `readability-identifier-naming`, git hook `commit-msg`, review |
+| Luật ngôn ngữ C++ (tham chiếu MISRA C++:2023, AUTOSAR C++14, CERT C++) | `.agents/skills/cpp-embedded-standard/SKILL.md` | clang-tidy, cppcheck, MISRA tool, review |
+| Luật ngôn ngữ C cho MCU (tham chiếu MISRA C:2012/2023, CERT C) | `.agents/skills/c-embedded-standard/SKILL.md` | như trên |
+| Lập trình phòng vệ Class B/C | `.agents/skills/safety-coding/SKILL.md` | review, unit test |
+| Đặt tên, ID, file, commit message | `.agents/skills/naming-conventions/SKILL.md` | clang-tidy `readability-identifier-naming`, git hook `commit-msg`, review |
 | Định dạng | `.clang-format`, `.editorconfig` | hook format (Claude), worker, CI |
 | Phân tích tĩnh | `.clang-tidy` (C++), `.ai/templates/clang-tidy-mcu-c.yaml` (C) | gate (`TIDY_CMD`) |
 | API/pattern cấm theo class & nền tảng | `scripts/check_banned.py` | gate (`banned`) |
-| Giao tiếp/giao thức | `.gemini/skills/comm-safety`, `proto-*` | review, unit/integration test |
-| Truy vết trong code | `.gemini/skills/traceability-tags/SKILL.md` | `scripts/trace.py` |
+| Giao tiếp/giao thức | `.agents/skills/comm-safety`, `proto-*` | review, unit/integration test |
+| Truy vết trong code | `.agents/skills/traceability-tags/SKILL.md` | `scripts/trace.py` |
 
 ## 2. Ngoại lệ
 Vi phạm có chủ đích → deviation `DEV-nnn` (`.ai/templates/deviation.md`), comment `// @deviation DEV-nnn` cùng dòng,

@@ -23,7 +23,7 @@ byte order, CRC, sequence, interface OSAL/HAL/log/safety, fake cho test. Chia nh
 - sửa: CMakeLists.txt (thêm thư mục con & target common/osal/log), src/CMakeLists.txt, test/CMakeLists.txt
 
 ## Quyết định đã chốt
-- Toàn bộ API theo `.gemini/skills/project-conventions/SKILL.md` (ADR-001). Mọi header đánh dấu `// OWNER: lead`.
+- Toàn bộ API theo `.agents/skills/project-conventions/SKILL.md` (ADR-001). Mọi header đánh dấu `// OWNER: lead`.
 - `Result<T>`: lưu `T` và `Error` không cấp phát (union có kiểm soát hoặc `std::optional<T>` + Error), `value()` khi rỗng → `VSUR_ASSERT`.
 - `fatal_error()` trên host: ghi log + `std::abort()`; trên Linux/QNX/MCU: Lead định nghĩa trong task nền tảng riêng.
 - CRC preset ban đầu: `kCrc16Modbus`, `kCrc32IsoHdlc` (check value theo catalogue CRC chuẩn, có test).
