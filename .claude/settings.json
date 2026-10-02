@@ -1,0 +1,61 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./scripts/delegate.sh:*)",
+      "Bash(./scripts/gate.sh:*)",
+      "Bash(./scripts/merge.sh:*)",
+      "Bash(./scripts/abort.sh:*)",
+      "Bash(./scripts/lead.sh:*)",
+      "Bash(./scripts/cross-review.sh:*)",
+      "Bash(./scripts/status.sh:*)",
+      "Bash(python scripts/trace.py:*)",
+      "Bash(python3 scripts/trace.py:*)",
+      "Bash(python scripts/check_banned.py:*)",
+      "Bash(python3 scripts/check_banned.py:*)",
+      "Bash(python scripts/check_scope.py:*)",
+      "Bash(python3 scripts/check_scope.py:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git -C:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(grep:*)"
+    ],
+    "deny": [
+      "Read(./.ai/logs/**)",
+      "Read(./.ai-out/**)",
+      "Edit(./docs/07-verification/records/**)",
+      "Write(./docs/07-verification/records/**)",
+      "Bash(git push:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git update-ref:*)",
+      "Bash(git commit -S:*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/status.sh\"" }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|Bash",
+        "hooks": [
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/guard.sh\"" }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/format.sh\"" }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+# Định dạng chuẩn C/C++ của dự án (clang-format ≥ 15 vì InsertBraces). Thay đổi = thay đổi coding standard.
+---
+Language: Cpp
+BasedOnStyle: Google
+Standard: c++17
+IndentWidth: 4
+ContinuationIndentWidth: 4
+ColumnLimit: 120
+AccessModifierOffset: -4
+NamespaceIndentation: None
+FixNamespaceComments: true
+DerivePointerAlignment: false
+PointerAlignment: Left
+BreakBeforeBraces: Attach
+InsertBraces: true                      # MISRA: thân if/for/while luôn có ngoặc
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortLambdasOnASingleLine: Inline
+IncludeBlocks: Regroup
+SpaceAfterCStyleCast: false
+...

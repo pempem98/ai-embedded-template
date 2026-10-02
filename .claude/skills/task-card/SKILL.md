@@ -1,0 +1,38 @@
+---
+name: task-card
+description: Cách viết task card giao cho Gemini worker hoặc cho chính Lead (owner lead), có safety class, platform, giao thức, truy vết. LUÔN dùng mỗi khi chia việc, lập kế hoạch, tạo file trong .ai/tasks/, hoặc chuẩn bị chạy scripts/delegate.sh / lead.sh — kể cả khi người dùng chỉ nói "giao cho Gemini", "chia task", "implement module X".
+---
+# Task card
+Mẫu: `.ai/templates/task.md`; ví dụ đầy đủ: `.ai/templates/example-T01.md`. Lưu `.ai/tasks/<ID>.md`.
+
+# Frontmatter (script kiểm tra và tự chọn skill Gemini)
+| Field | Giá trị | Ghi chú |
+|---|---|---|
+| type | implement / fix / test / research / doc | |
+| owner | gemini / lead | lead: code bạn tự viết (ISR, DMA, safety monitor, safe state, RT sync, startup...) → `lead.sh` |
+| platform | host / mcu / linux / qnx | chọn build + skill nền tảng |
+| safety_class | A / B / C | bắt buộc với task code; C → effort high, autofix 0 |
+| software_item | SI-nnn | từ SAD |
+| requirements | SRS-… | bắt buộc B/C; trace.py kiểm tra |
+| risk_controls | RCM-… | nếu task implement biện pháp kiểm soát |
+| detailed_design | docs/04-detailed-design/SDD-x.md | bắt buộc C, file phải có thật; được chèn vào prompt |
+| anomaly | ANOM-nnn | với type: fix |
+| protocols | can, ethercat, spi, i2c, uart, usb, ssi, biss-c, endat, ethernet | chèn `comm-safety` + `proto-<x>`; xem skill `comm-protocols` |
+| decisions | ADR-nnn | file `.ai/decisions/ADR-nnn*.md` chèn nguyên văn vào prompt |
+| level | unit / integration / hil | type test; xem skill `integration-test` |
+| coverage_scope | file/thư mục | coverage tính trên phạm vi này; bắt buộc với type: test không sửa src |
+| effort, skills, autofix_max | | skills chỉ cần thêm ngoài skill tự động |
+
+# Nguyên tắc
+1. Một task = một unit/mục tiêu, diff < ~300 dòng.
+2. Viết & commit interface `.h/.hpp` (`// OWNER: lead`) TRƯỚC khi delegate (worktree tạo từ HEAD; script cảnh báo nếu repo còn thay đổi).
+3. "Quyết định đã chốt" trả lời trước mọi câu Gemini sẽ hỏi: kiểu, đơn vị, hằng số, giới hạn, timeout,
+   xử lý lỗi & safe state, context (ISR/thread/priority), bộ nhớ, API OS được dùng; giao tiếp: khung, CRC đầy đủ tham số, counter, timeout, ngưỡng lỗi.
+   Quyết định dùng lại nhiều task → ADR + tham chiếu `decisions:` thay vì chép lại.
+4. "Files được phép" chính xác — `check_scope.py` THỰC THI: chỉ dòng `- tạo:` / `- sửa:` / `- xóa:` được tính; glob và thư mục `/` được phép.
+   Gemini không bao giờ được chạm scripts/, .ai/, .gemini/, .claude/, cmake/, CMakeLists.txt gốc (kể cả khi liệt kê).
+   Research/doc: liệt kê file ghi chú/tài liệu được tạo (vd. `- tạo: .ai/notes/T05-biss-encoder.md`).
+5. Tiêu chí chấp nhận kiểm chứng được; Class C nêu thêm tiêu chí §5.5.4 liên quan (fault handling, boundary, init, resource...).
+6. Không giao Gemini: safety supervisor core, state machine safe state, ISR/DMA, đồng bộ RT, cấu hình scheduler/partition,
+   linker/startup/bootloader → task `owner: lead`.
+7. Task phụ thuộc → merge task trước rồi mới delegate task sau; task độc lập chạy song song (Bash background).

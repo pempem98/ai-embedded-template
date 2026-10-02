@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Kiểm tra commit message theo naming-conventions (Conventional Commits + trailer truy vết).
+# Cài một lần mỗi clone: git config core.hooksPath scripts/git-hooks
+export LC_ALL=C.UTF-8
+msg_file="$1"
+first="$(grep -v '^#' "$msg_file" | head -1)"
+types='feat|fix|test|docs|refactor|perf|build|ci|chore|revert|safety|merge'
+[[ "$first" =~ ^(Merge|Revert|fixup!|squash!) ]] && exit 0
+re="^(${types})(\([A-Za-z0-9._/-]+\))?!?: [^ ].*"
+if ! [[ "$first" =~ $re ]]; then
+  echo "✖ commit message phải là '<type>(<scope>): <tóm tắt>' — type: ${types//|/, }" >&2; exit 1
+fi
+(( ${#first} <= 72 )) || { echo "✖ dòng tóm tắt dài ${#first} > 72 ký tự" >&2; exit 1; }
+[[ "$first" == *. ]] && { echo "✖ bỏ dấu chấm cuối dòng tóm tắt" >&2; exit 1; }
+br="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+if [[ "$br" == task/* ]] && ! grep -qE '^Task: ' "$msg_file"; then
+  echo "✖ nhánh $br: thiếu trailer 'Task: ${br#task/}'" >&2; exit 1
+fi
+if [[ "$first" =~ ^fix ]] && grep -qE '^Task: ' "$msg_file" && grep -qiE 'ANOM-[0-9]+' "$msg_file" && ! grep -qE '^Anomaly: ' "$msg_file"; then
+  echo "✖ fix liên quan anomaly: thêm trailer 'Anomaly: ANOM-nnn'" >&2; exit 1
+fi
+exit 0

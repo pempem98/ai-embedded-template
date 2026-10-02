@@ -1,0 +1,5 @@
+.ai/logs/
+.ai-out/
+build/
+__pycache__/
+*.pyc

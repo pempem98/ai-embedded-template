@@ -1,0 +1,19 @@
+{
+  "tools": {
+    "exclude": [
+      "run_shell_command(git commit)",
+      "run_shell_command(git push)",
+      "run_shell_command(git reset)",
+      "run_shell_command(git checkout)",
+      "run_shell_command(git rebase)",
+      "run_shell_command(git merge)",
+      "run_shell_command(git update-ref)",
+      "run_shell_command(git worktree)",
+      "run_shell_command(git branch)",
+      "run_shell_command(rm -rf)"
+    ]
+  },
+  "privacy": {
+    "usageStatisticsEnabled": false
+  }
+}

@@ -1,0 +1,3 @@
+- threat-model.md (STRIDE theo data flow) — template: docs/templates/threat-model-template.md
+- sbom/ — sinh tự động từ build (SPDX/CycloneDX), không viết tay
+- vulnerability-management-plan.md — TBD
