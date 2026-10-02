@@ -52,7 +52,33 @@ def rel(p):
 
 
 def paths(args):
-    return [v for k, v in args.items() if isinstance(v, str) and v and ("Path" in k or "File" in k or k == "Directory")]
+    values = []
+    for key, value in args.items():
+        normalized = re.sub(r"[^a-z0-9]", "", key.lower())
+        is_path_key = normalized in {
+            "path", "filepath", "targetfile", "absolutepath", "directory",
+            "targetdirectory", "workingdirectory", "notebookpath",
+        } or normalized.endswith("path") or normalized.endswith("file")
+        if not is_path_key:
+            continue
+        if isinstance(value, str) and value:
+            values.append(value)
+        elif isinstance(value, list):
+            values.extend(item for item in value if isinstance(item, str) and item)
+    return values
+
+
+def has_link_component(path):
+    current = ROOT
+    for part in Path(path).parts:
+        current /= part
+        try:
+            attributes = getattr(current.stat(), "st_file_attributes", 0)
+        except OSError:
+            attributes = 0
+        if current.is_symlink() or attributes & 0x0400:
+            return True
+    return False
 
 
 def owner_lead(r):
@@ -72,10 +98,15 @@ def decide(name, args):
     if name in WRITE_TOOLS:
         if ROLE == "reviewer":
             return "deny", "reviewer chỉ đọc"
-        for p in paths(args):
+        target_paths = paths(args)
+        if not target_paths:
+            return ("deny" if SCRIPTED else "ask"), "không xác định được đường dẫn file ghi"
+        for p in target_paths:
             r = rel(p)
             if r is None:
                 return "deny", f"ghi ngoài repo/worktree: {p}"
+            if has_link_component(r):
+                return "deny", f"đường dẫn ghi chứa symlink/reparse point: {r}"
             if r.startswith(".ai-out/"):
                 continue
             if protected(r) or r.startswith(".git/"):

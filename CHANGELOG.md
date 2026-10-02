@@ -1,6 +1,14 @@
 # Changelog — AI kit (cài vào dự án bằng scripts/install.sh)
 Mỗi phiên bản thay đổi skill/gate/script = thay đổi công cụ → dự án đánh giá tái validate (docs/01-plan §3) khi upgrade.
 
+## 2.2.1
+- Gate hỗ trợ giai đoạn bootstrap khi chưa có tool MISRA/MC/DC; bật `REQUIRE_MISRA=1`/`REQUIRE_MCDC=1` trước pilot/release để fail-closed.
+- Loại bỏ quote không an toàn khi chèn danh sách file vào lệnh gate; kiểm tra ID task, branch/base của worktree và lỗi non-zero từ `agy`.
+- Hook worker chuẩn hóa key đường dẫn, từ chối write không xác định target và symlink escape; scope check cũng từ chối symlink.
+- Merge không còn bỏ qua lỗi commit bằng chứng; thu hẹp quyền Git trực tiếp của Claude.
+- Gate kiểm tra Python runtime, ghi version toolchain vào output và giới hạn glob scope theo đúng cấp thư mục.
+- Installer fail-fast khi không thể tính hash hoặc sao chép file.
+
 ## 2.2.0
 - Worker chuyển từ Gemini CLI (ngừng hỗ trợ 06/2026) sang **Antigravity CLI `agy`** (vẫn dùng model Gemini):
   `.gemini/skills` → `.agents/skills`, `GEMINI.md` → `AGENTS.md`, `.gemini/commands/worker.toml` → `.agents/workflows/worker.md`,

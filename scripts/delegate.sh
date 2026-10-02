@@ -103,6 +103,11 @@ while :; do
   CID="${AGY_CID:-$CID}"
   [[ $AGY_RC -eq 124 ]] && echo "⚠ agy timeout sau ${AGY_TIMEOUT}s"
   head_guard || { record worker GIT_VIOLATION 4 "$MODEL"; exit 4; }
+  if (( AGY_RC != 0 )); then
+    echo "✖ agy kết thúc lỗi (rc=$AGY_RC), không chấp nhận report của lượt này."
+    record worker AGY_FAILURE 4 "$MODEL"
+    exit 4
+  fi
 
   STATUS=""
   [[ -f "$REPORT" ]] && { cp "$REPORT" ".ai/reports/$ID.md"; STATUS="$(grep -m1 -oE '^STATUS:[[:space:]]*[A-Z]+' "$REPORT" | awk '{print $2}')"; }

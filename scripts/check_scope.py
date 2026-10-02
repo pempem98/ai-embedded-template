@@ -37,11 +37,29 @@ def allowed(task):
 
 
 def match(path, pats):
-    return any(path.startswith(p) if p.endswith("/") else fnmatch.fnmatchcase(path, p) for p in pats)
+    for pattern in pats:
+        if pattern.endswith("/"):
+            if path.startswith(pattern):
+                return True
+            continue
+        if "**" not in pattern and path.count("/") != pattern.count("/"):
+            continue
+        if fnmatch.fnmatchcase(path, pattern):
+            return True
+    return False
 
 
 def protected(path):
     return path.startswith(PROTECTED_PREFIX) or path in PROTECTED_EXACT
+
+
+def is_link(path):
+    if path.is_symlink():
+        return True
+    try:
+        return bool(getattr(path.stat(), "st_file_attributes", 0) & 0x0400)
+    except OSError:
+        return False
 
 
 def changed(root, base):
@@ -67,6 +85,8 @@ def main():
         print("SCOPE FAIL: mục '## Files được phép' không có dòng '- tạo:' / '- sửa:' nào"); sys.exit(1)
     files, bad = changed(a.root, a.base), []
     for st, p in files:
+        if is_link(pathlib.Path(a.root, p)):
+            bad.append(f"{p}: symlink/reparse point không được phép trong thay đổi task")
         pats = delete if st == "D" else write
         if protected(p) and not (a.owner == "lead" and match(p, pats)):
             bad.append(f"{p}: đường dẫn được bảo vệ (script/config/gate/skill/hồ sơ)")

@@ -77,11 +77,20 @@ for d in answers questions; do [[ -f ".ai/$d/$ID.md" ]] && cp ".ai/$d/$ID.md" "$
   echo; echo "## Commits (author ai-worker = Gemini qua agy, ai-lead = Claude)"; echo "$HIST"
 } > "$EV/provenance.txt"
 if [[ -f .ai/metrics.csv ]]; then { head -1 .ai/metrics.csv; grep -E "^[^,]*,$ID," .ai/metrics.csv; } > "$EV/metrics.csv"; fi
-rm -rf "$TMP"
-
-git worktree remove --force "$WT"; git branch -q -d "$BR"; git update-ref -d "$BASEREF"
 mkdir -p .ai/tasks/done; mv "$TASK" .ai/tasks/done/
 for d in answers questions reviews; do [[ -f ".ai/$d/$ID.md" ]] && mv ".ai/$d/$ID.md" ".ai/tasks/done/$ID.$d.md"; done
-git add -A docs/07-verification/records .ai/tasks .ai/reviews .ai/answers .ai/questions .ai/metrics.csv 2>/dev/null
-git commit -q -m "docs(records): $ID verification evidence" -m "Task: $ID" || true
+git add -A docs/07-verification/records .ai/tasks .ai/reviews .ai/answers .ai/questions .ai/metrics.csv \
+  || fail "Không stage được bằng chứng merge" 3
+git diff --cached --quiet && fail "Không có bằng chứng mới để commit" 3
+git commit -q -m "docs(records): $ID verification evidence" -m "Task: $ID" \
+  || fail "Không commit được bằng chứng merge" 3
+git ls-files --error-unmatch "$EV/provenance.txt" >/dev/null \
+  || fail "Commit evidence không chứa provenance.txt" 3
+rm -rf "$TMP"
+git worktree remove --force "$WT" \
+  || fail "Không xóa được worktree sau khi đã lưu evidence" 3
+git branch -q -d "$BR" \
+  || fail "Không xóa được branch $BR sau khi merge" 3
+git update-ref -d "$BASEREF" \
+  || fail "Không xóa được ref $BASEREF sau khi merge" 3
 echo "✔ Đã merge $ID — bằng chứng: $EV"

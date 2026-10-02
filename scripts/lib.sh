@@ -3,6 +3,8 @@
 # Nguyên tắc: worktree là vùng KHÔNG tin cậy (AI worker ghi được) → mọi kiểm tra dùng script & config của ROOT.
 ROOT="$(git rev-parse --show-toplevel)" || { echo "✖ Không phải git repo"; exit 1; }
 cd "$ROOT" || exit 1
+[[ "$ID" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]] \
+  || { echo "✖ ID task không hợp lệ: chỉ dùng chữ, số, '.', '_' hoặc '-'"; exit 1; }
 # shellcheck disable=SC1091
 source .ai/config.env
 TASK=".ai/tasks/$ID.md"; WT="$(dirname "$ROOT")/wt-$ID"; BR="task/$ID"; BASEREF="refs/ai/base/$ID"
@@ -50,6 +52,14 @@ ensure_worktree() {
   fi
   BASE="$(git rev-parse -q --verify "$BASEREF")" \
     || { echo "✖ Thiếu $BASEREF (worktree tạo bằng bản cũ?) — ./scripts/abort.sh $ID rồi làm lại"; exit 1; }
+  [[ -d "$WT/.git" || -f "$WT/.git" ]] \
+    || { echo "✖ $WT không phải Git worktree hợp lệ"; exit 1; }
+  actual_branch="$(git -C "$WT" symbolic-ref -q --short HEAD || true)"
+  [[ "$actual_branch" == "$BR" ]] \
+    || { echo "✖ Worktree $WT đang ở branch '${actual_branch:-DETACHED}', cần '$BR'"; exit 1; }
+  wt_head="$(git -C "$WT" rev-parse HEAD)"
+  git -C "$WT" merge-base --is-ancestor "$BASE" "$wt_head" \
+    || { echo "✖ HEAD worktree không bắt nguồn từ $BASEREF — abort và tạo lại task"; exit 1; }
   mkdir -p "$WT/.ai-out" .ai/reports .ai/questions .ai/logs
 }
 
@@ -162,7 +172,7 @@ agy_run() {
     tries=$(( tries + 1 )); conv=(--conversation "$AGY_CID")
     msg="Hành động vừa rồi bị CHẶN ($denied): bạn KHÔNG có quyền chạy lệnh shell hay tool ngoài đọc/sửa file. Không thử lại. Tiếp tục nhiệm vụ chỉ bằng đọc/sửa file theo hướng dẫn ban đầu."
   done
-  return 0
+  return "$AGY_RC"
 }
 # Phòng thủ nhiều lớp: AI không có quyền chạy lệnh, nhưng script vẫn kiểm
 # HEAD và nhánh worktree phải giữ nguyên sau khi AI chạy. Trả 0 nếu nguyên vẹn hoặc đã khôi phục an toàn, 1 nếu không thể.

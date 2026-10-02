@@ -41,10 +41,10 @@ Trách nhiệm thuộc về kỹ sư có năng lực được chỉ định.
 |---|---|---|---|
 | 1 | Class nào bắt buộc kỹ sư ký trước merge | QA + SW Lead | `HUMAN_SIGNOFF_CLASSES="B C"` |
 | 2 | Hình thức chữ ký: trường văn bản / commit ký GPG / eQMS; có cần 21 CFR Part 11 | QA/RA | `SIGNOFF_MODE="text"` |
-| 3 | Ngưỡng coverage B (line ≥ 90%), C (line+branch 100%), MC/DC & công cụ | SW Lead + QA | MC/DC chưa cấu hình |
+| 3 | Ngưỡng coverage B (line ≥ 90%), C (line+branch 100%), MC/DC & công cụ | SW Lead + QA | Bật `REQUIRE_MCDC=1` trước pilot/release Class C |
 | 4 | Coverage/phân tích tĩnh mỗi task tính trên file thay đổi; release theo SI/toàn bộ | SW Lead + QA | đã implement trong gate.sh |
 | 5 | Cho Gemini tự sửa lỗi build cơ học ở Class A/B? | SW Lead | `AUTOFIX_MAX_DEFAULT=0` |
-| 6 | Công cụ MISRA & thời điểm bắt buộc | SW Lead | `MISRA_CMD` trống (gate báo SKIP) |
+| 6 | Công cụ MISRA & thời điểm bắt buộc | SW Lead | Bật `REQUIRE_MISRA=1` trước pilot/release Class B/C |
 | 7 | Danh mục hồ sơ bắt buộc trước merge/release | QA/RA | merge.sh lưu bộ hồ sơ ở docs/07 README |
 | 8 | Bảng hoạt động theo class (skill `iec62304-process`) khớp tiêu chuẩn & SOP công ty | QA/RA | chưa đối chiếu |
 | 9 | Danh mục mối nguy/RCM mẫu, cơ chế đánh giá an toàn độc lập Class C | Safety/Risk | skill risk-management, safety-architecture |

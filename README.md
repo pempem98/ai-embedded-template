@@ -10,7 +10,7 @@ Repo này là **AI kit có phiên bản** (`.ai/KIT_VERSION`, `CHANGELOG.md`). M
 cài kit vào **gốc repo**:
 ```
 ./scripts/install.sh ../robot-teleop            # cài mới
-./scripts/install.sh ../robot-teleop --upgrade  # nâng cấp: file dự án đã sửa không bị ghi đè (sinh .kit-new)
+./scripts/install.sh ../robot-teleop --upgrade  # nâng cấp: file dự án đã sửa không bị ghi đè (sinh .vsur-kit)
 ./scripts/install.sh ../robot-teleop --dry-run  # xem trước
 ```
 Vì sao không "thả dự án vào workspace/":

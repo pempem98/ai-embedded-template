@@ -17,9 +17,6 @@
       "Bash(git status:*)",
       "Bash(git diff:*)",
       "Bash(git log:*)",
-      "Bash(git -C:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
       "Bash(grep:*)"
     ],
     "deny": [

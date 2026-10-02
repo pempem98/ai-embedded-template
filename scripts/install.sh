@@ -4,7 +4,7 @@
 #
 # Hai loại file:
 #   KIT     (template sở hữu): CLAUDE.md, AGENTS.md, .claude/, .agents/ (trừ project-conventions), scripts/, .ai/templates/,
-#           docs/templates/, .ai/KIT_VERSION. Upgrade: ghi đè nếu dự án chưa sửa; dự án đã sửa → ghi <file>.kit-new (CONFLICT).
+#           docs/templates/, .ai/KIT_VERSION. Upgrade: ghi đè nếu dự án chưa sửa; dự án đã sửa → ghi <file>.vsur-kit (CONFLICT).
 #   PROJECT (dự án sở hữu): .ai/config.env, project-conventions, docs/* (bản làm việc), .clang-*, .editorconfig, .gitattributes.
 #           Chỉ tạo khi chưa có, không bao giờ ghi đè. .gitignore: thêm dòng còn thiếu.
 # Trạng thái lưu ở .ai/kit-manifest.txt (sha256 của file KIT đã cài) — commit file này cùng repo.
@@ -25,7 +25,7 @@ elif [[ -n "$(git -C "$DST" rev-parse --show-prefix)" ]]; then
 fi
 MAN="$DST/.ai/kit-manifest.txt"
 if [[ -f "$MAN" && $UPGRADE -eq 0 ]]; then echo "✖ Đã cài kit ($(cat "$DST/.ai/KIT_VERSION" 2>/dev/null)) — dùng --upgrade"; exit 1; fi
-[[ ! -f "$MAN" && $UPGRADE -eq 1 ]] && echo "⚠ Không có manifest — coi như cài mới; file khác biệt sẽ thành .kit-new"
+[[ ! -f "$MAN" && $UPGRADE -eq 1 ]] && echo "⚠ Không có manifest — coi như cài mới; file khác biệt sẽ thành .vsur-kit"
 
 # Kit ≤ 2.1 (Gemini CLI) → 2.2 (Antigravity CLI): chuyển project-conventions (file DỰ ÁN) sang .agents/ trước khi cài,
 # để không bị seed bằng bản baseline. File kit cũ trong .gemini/ xử lý theo manifest (REMOVED/OBSOLETE) bên dưới.
@@ -56,9 +56,13 @@ seed_files() {
     find .ai/decisions -type f -name 'ADR-*.md'
   } | sort -u
 }
-sha() { sha256sum "$1" | cut -d' ' -f1; }
+sha() { sha256sum "$1" | cut -d' ' -f1 || { echo "✖ Không tính được SHA-256: $1" >&2; exit 1; }; }
 man_get() { [[ -f "$MAN" ]] && awk -v p="$1" '$2==p {print $1; exit}' "$MAN"; }
-put() { [[ $DRY -eq 1 ]] && return 0; mkdir -p "$(dirname "$2")" && cp -p "$1" "$2"; }
+put() {
+  [[ $DRY -eq 1 ]] && return 0
+  mkdir -p "$(dirname "$2")" || { echo "✖ Không tạo được thư mục cho $2" >&2; exit 1; }
+  cp -p "$1" "$2" || { echo "✖ Không sao chép được $1 → $2" >&2; exit 1; }
+}
 
 NEWMAN="$(mktemp)"; declare -A CNT; LOG=()
 note() { CNT[$1]=$(( ${CNT[$1]:-0} + 1 )); [[ "$1" == SAME ]] || LOG+=("$1  $2"); }
@@ -68,10 +72,10 @@ for f in $KIT_LIST; do
   if [[ ! -e "$t" ]]; then put "$f" "$t"; note NEW "$f"; echo "$s_new $f" >> "$NEWMAN"; continue; fi
   s_t="$(sha "$t")"; s_m="$(man_get "$f")"
   if [[ "$s_t" == "$s_new" ]]; then note SAME "$f"; echo "$s_new $f" >> "$NEWMAN"
-  elif [[ -z "$s_m" ]]; then put "$f" "$t.kit-new"; note CONFLICT "$f (file có sẵn của dự án → xem $f.kit-new)"; echo "$s_new $f" >> "$NEWMAN"
+  elif [[ -z "$s_m" ]]; then put "$f" "$t.vsur-kit"; note CONFLICT "$f (file có sẵn của dự án → xem $f.vsur-kit)"; echo "$s_new $f" >> "$NEWMAN"
   elif [[ "$s_t" == "$s_m" ]]; then put "$f" "$t"; note UPDATE "$f"; echo "$s_new $f" >> "$NEWMAN"
   elif [[ "$s_new" == "$s_m" ]]; then note LOCAL "$f (dự án đã sửa, kit không đổi — giữ nguyên)"; echo "$s_m $f" >> "$NEWMAN"
-  else put "$f" "$t.kit-new"; note CONFLICT "$f (cả dự án và kit đều đổi → gộp $f.kit-new)"; echo "$s_new $f" >> "$NEWMAN"
+  else put "$f" "$t.vsur-kit"; note CONFLICT "$f (cả dự án và kit đều đổi → gộp $f.vsur-kit)"; echo "$s_new $f" >> "$NEWMAN"
   fi
 done
 # File kit cũ không còn trong kit mới
@@ -99,8 +103,8 @@ rm -f "$NEWMAN"
 
 echo "== AI kit $(cat .ai/KIT_VERSION) → $DST $([[ $DRY -eq 1 ]] && echo '(DRY-RUN, không ghi gì)')"
 for k in NEW UPDATE SEED REMOVED LOCAL OBSOLETE CONFLICT GITIGNORE SAME; do [[ -n "${CNT[$k]:-}" ]] && printf '  %-9s %s\n' "$k" "${CNT[$k]}"; done
-printf '%s\n' "${LOG[@]}" | grep -E '^(CONFLICT|OBSOLETE|REMOVED|LOCAL)' | head -40
-if [[ -n "${CNT[CONFLICT]:-}" ]]; then echo "⚠ Gộp các file .kit-new vào file tương ứng rồi xóa .kit-new trước khi commit."; fi
+printf '%s\n' "${LOG[@]}" | grep -E '^(CONFLICT|OBSOLETE|REMOVED|LOCAL)' | head -40 || true
+if [[ -n "${CNT[CONFLICT]:-}" ]]; then echo "⚠ Gộp các file .vsur-kit vào file tương ứng rồi xóa .vsur-kit trước khi commit."; fi
 if [[ $UPGRADE -eq 0 ]]; then cat <<'EOF'
 Bước tiếp theo trong repo đích:
   1. Sửa .ai/config.env (PYTHON, BUILD_CMD_*, AGY_MODEL_LOW/HIGH từ `agy models`, SIGNOFF_MODE...); cài agy và đăng nhập (README §Cài đặt)
