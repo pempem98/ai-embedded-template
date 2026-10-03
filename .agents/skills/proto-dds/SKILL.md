@@ -5,6 +5,7 @@ description: Implement giao tiếp DDS (DataWriter/DataReader, WaitSet, QoS prof
 # DDS
 - Vendor, phiên bản, API (C++ PSM / modern C++ API), file QoS profile, tên topic, kiểu IDL, domain ID, partition: ĐÚNG task card.
   Không tự đổi QoS trong code, không tạo QoS inline — chỉ nạp profile được chỉ định. Không thêm topic/kiểu mới.
+  Task card không kèm ADR vendor DDS trong `decisions:` → BLOCKED: không tự chọn vendor, API, generator hay QoS mặc định.
 - Code sinh từ IDL (`gen/`) KHÔNG sửa tay, không commit bản sửa; chỉ dùng qua wrapper của dự án nếu task card có.
 - Tạo entity (participant, topic, writer, reader, WaitSet) trong pha init; kiểm mọi giá trị trả về/null; lỗi → trả `Status`, không tiếp tục.
 - Sau khi tạo, đọc lại QoS thực tế của writer/reader so với giá trị task card khi task card yêu cầu; xử lý

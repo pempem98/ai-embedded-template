@@ -62,7 +62,11 @@ description: Kiến trúc hệ nhiều service C++ (Linux/QNX) cho robot phẫu 
 
 # Câu hỏi phải chốt (ADR) trước khi viết service đầu tiên
 DDS vendor & phiên bản (skill `comm-protocols` → `references/dds.md`); miền đồng hồ & PTP; CANopen/EtherCAT master stack;
-lớp E2E chung; cách build image (Yocto/Buildroot), toolchain; quy ước tên topic/domain ID; restart policy theo class.
+lớp E2E chung (đã có: ADR-003); cách build image (Yocto/Buildroot), toolchain; quy ước tên topic/domain ID; restart policy theo class.
+**Kiểm trước khi làm**: việc động đến DDS hoặc timestamp/đồng bộ giữa node → tìm ADR tương ứng trong `.ai/decisions/` (danh sách
+còn thiếu ở `docs/03-architecture/context-brief.md`). Không tìm thấy ADR vendor DDS hoặc ADR miền đồng hồ & PTP → dừng, báo người
+dùng là cần lập ADR đó trước; không giả định vendor, API, generator, QoS mặc định hay miền đồng hồ, không viết task card/SDD dựa
+trên giả định. Lập xong ADR thì xóa dòng tương ứng trong context-brief và thêm 1 dòng vào `project-conventions`.
 
 # Review — REJECT nếu
 Service tự đổi trạng thái hệ thống; interface không bounded/thiếu E2E cho dữ liệu an toàn; submodule theo nhánh; tự restart vào

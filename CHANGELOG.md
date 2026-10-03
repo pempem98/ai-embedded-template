@@ -10,7 +10,11 @@ ADR-002 Accepted. Hai ADR mới (Accepted) và skill theo đó; không đổi ga
 - ADR-004 — change request xuyên service (`CR-nnn` ở `vsur-system`, mỗi repo tự làm task của mình, không khóa chéo bằng script).
   Mẫu `docs/templates/change-request-template.md`; trường task card `change:`, trailer commit `Change:`; cập nhật
   `service-architecture`, `task-card`, `naming-conventions`, `/impact`. Coding standard Rev 0.3.
-Nâng cấp dự án: `project-conventions` là file dự án (install.sh không ghi đè) — chép tay mục E2E và ba dòng ADR-002..004.
+- Chốt chặn cho ADR nền tảng còn thiếu (vendor DDS, miền đồng hồ & PTP): danh sách trong `context-brief.md`; Lead kiểm trước khi
+  viết task card/SDD (`service-architecture`, `task-card`); worker BLOCKED khi task card không kèm ADR (`proto-dds`,
+  `sync-control-impl`, `project-conventions`).
+Nâng cấp dự án: `project-conventions` và `context-brief.md` là file dự án (install.sh không ghi đè) — chép tay mục E2E, mục
+"Chưa chốt", ba dòng ADR-002..004 và mục "ADR nền tảng CHƯA CÓ".
 
 ## 2.4.0
 Skill & quy ước code (không đổi gate/ngưỡng). Prompt của mọi task code có thêm `design-clean-code` và `logging-impl`.

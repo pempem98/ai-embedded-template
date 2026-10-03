@@ -44,3 +44,6 @@ Mẫu: `.ai/templates/task.md`; ví dụ đầy đủ: `.ai/templates/example-T0
    Task song song đã merge làm `INTEGRATION_BRANCH` tiến → merge.sh chạy gate trên kết quả merge; FAIL → cập nhật nhánh task, review lại.
 8. Service mới (polyrepo): mẫu `.ai/templates/bootstrap-service.md`; kiến trúc theo skill `service-architecture`,
    timing/đồng bộ theo `distributed-sync-control` — chốt miền đồng hồ, max_age, chu kỳ/pha, QoS DDS trong "Quyết định đã chốt".
+9. ADR nền tảng phải có trước khi giao: task `protocols: dds` cần ADR vendor DDS; task dùng timestamp/tuổi dữ liệu giữa các
+   node (E2E, `sync-control-impl`) cần ADR miền đồng hồ & PTP — cả hai ghi trong `decisions:`. Chưa có ADR → không viết task
+   card, báo người dùng cần lập ADR (skill `service-architecture`, mục "Kiểm trước khi làm").

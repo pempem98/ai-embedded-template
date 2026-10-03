@@ -60,6 +60,10 @@ description: Quy ước chung của dự án (namespace, kiểu lỗi/Result, OS
   Tham số từng message lấy từ `E2eProfile` sinh từ bảng ICD (`vsur-idl`) — không tự đặt `max_age`, ngưỡng, `data_id`.
   `epoch` do ssm-service cấp; `epoch = 0` không dùng cho điều khiển. Không tự định nghĩa header/CRC/counter khác. Header chưa có → HỎI.
 
+# Chưa chốt — task chạm tới mà task card không kèm ADR tương ứng trong `decisions:` → HỎI (BLOCKED), không tự chọn
+- Vendor DDS (vendor, phiên bản, API, generator, QoS profile): TBD — chưa có ADR.
+- Miền đồng hồ & PTP/gPTP (miền nào cho `timestamp_us`, giá trị `clock_domain`, hành vi khi mất đồng bộ): TBD — chưa có ADR.
+
 # Test
 - C++: GoogleTest + GoogleMock. C (MCU): Unity. Không đổi framework.
 - Thư mục: `test/<module>/test_<file>.cpp`, fake/mock dùng chung ở `test/fakes/`, test tích hợp `test/integration/<chủ đề>/`.

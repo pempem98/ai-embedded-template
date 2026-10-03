@@ -23,5 +23,11 @@
 ## Safe state theo chế độ
 - TBD (setup / teleop / instrument exchange / homing)
 
+## ADR nền tảng CHƯA CÓ — động đến thì dừng, lập ADR trước (xóa dòng khi đã có ADR)
+- **Vendor DDS** (vendor, phiên bản, generator, license): chặn mọi task `protocols: dds`, wrapper `SafeWriter`/`SafeReader`,
+  QoS profile XML, mục DDS trong SOUP list.
+- **Miền đồng hồ & PTP/gPTP** (grandmaster, quan hệ với EtherCAT DC, hành vi khi mất lock): chặn `timestamp_us`/`clock_domain`/
+  `max_age` của E2E (ADR-003), stale check giữa các node, timing budget end-to-end.
+
 ## Quy ước chính
 - Xem `.agents/skills/project-conventions/SKILL.md` và `.ai/decisions/`.

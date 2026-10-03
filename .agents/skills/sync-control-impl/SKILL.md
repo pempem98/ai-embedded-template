@@ -7,6 +7,8 @@ description: Quy tắc implement code điều khiển đồng bộ/đa tần s�
   lấy từ task card/SDD dưới dạng `constexpr` có đơn vị trong tên. Không tự chọn, không "điều chỉnh cho chạy được".
 - Timestamp: luôn kiểu thời gian của dự án (`vsur::TimePoint`/`Microseconds`) + ghi rõ miền đồng hồ (local monotonic / PTP /
   DC) theo task card. CẤM so sánh/trừ hai timestamp khác miền. Không dùng `CLOCK_REALTIME` cho deadline.
+  Timestamp đi giữa các node mà task card không kèm ADR miền đồng hồ & PTP trong `decisions:` → BLOCKED: không tự giả định
+  hai node chung đồng hồ, không tự chọn miền.
 - Stale check: tuổi = now − timestamp (cùng miền) ≤ max_age VÀ seq tiến (`vsur::seq_delta`); mẫu stale → không dùng, đếm,
   phản ứng theo task card. Khi task card báo mất đồng bộ đồng hồ → dùng cơ chế dự phòng task card chỉ định (seq + thời điểm nhận cục bộ).
 - Rate transition: dùng đúng cơ chế task card (triple buffer mới nhất / nội suy / ZOH có giới hạn). Ngoại suy tối đa N chu kỳ,
