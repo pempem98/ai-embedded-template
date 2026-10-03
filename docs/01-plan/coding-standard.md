@@ -2,6 +2,7 @@
 | Rev | Date | Author | Change | Status |
 |---|---|---|---|---|
 | 0.1 | | | Initial | Draft |
+| 0.2 | 2026-10-03 | Lead (AI) | Thêm luật dùng C++ template (ADR-002) vào `cpp-embedded-standard`; thêm `design-clean-code`, `logging-impl` | Draft |
 
 Áp dụng cho mọi mã nguồn sản phẩm, bất kể do kỹ sư, Claude hay Gemini viết. Các file dưới đây là **nguồn kiểm soát**
 (quản lý cấu hình trong git); tài liệu này chỉ mô tả phạm vi, cách thực thi và quy trình thay đổi.
@@ -12,6 +13,8 @@
 | Luật ngôn ngữ C++ (tham chiếu MISRA C++:2023, AUTOSAR C++14, CERT C++) | `.agents/skills/cpp-embedded-standard/SKILL.md` | clang-tidy, cppcheck, MISRA tool, review |
 | Luật ngôn ngữ C cho MCU (tham chiếu MISRA C:2012/2023, CERT C) | `.agents/skills/c-embedded-standard/SKILL.md` | như trên |
 | Lập trình phòng vệ Class B/C | `.agents/skills/safety-coding/SKILL.md` | review, unit test |
+| Design pattern được phép/cấm, clean code | `.agents/skills/design-clean-code/SKILL.md` | review, clang-tidy (một phần) |
+| Logging (đường RT, nội dung cấm ghi, code debug) | `.agents/skills/logging-impl/SKILL.md` | review, banned-check (`printf`/`cout` Class C) |
 | Đặt tên, ID, file, commit message | `.agents/skills/naming-conventions/SKILL.md` | clang-tidy `readability-identifier-naming`, git hook `commit-msg`, review |
 | Định dạng | `.clang-format`, `.editorconfig` | hook format (Claude), worker, CI |
 | Phân tích tĩnh | `.clang-tidy` (C++), `.ai/templates/clang-tidy-mcu-c.yaml` (C) | gate (`TIDY_CMD`) |

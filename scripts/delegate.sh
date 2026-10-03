@@ -36,7 +36,7 @@ fi
 AUTO="worker-protocol"
 case "$TYPE" in
   implement|fix|test)
-    AUTO+=" project-conventions naming-conventions build-protocol unit-test traceability-tags"
+    AUTO+=" project-conventions naming-conventions design-clean-code logging-impl build-protocol unit-test traceability-tags"
     case "$PLATFORM" in
       mcu)   AUTO+=" c-embedded-standard" ;;
       linux) AUTO+=" cpp-embedded-standard linux-rt-impl" ;;

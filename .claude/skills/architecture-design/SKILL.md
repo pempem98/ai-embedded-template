@@ -42,6 +42,9 @@ Sơ đồ: Mermaid trong markdown (diff được, review được) — quy ướ
 - Giao tiếp giữa SI: message passing (QNX) / SPSC queue, triple buffer, shared memory + seqlock (Linux RT); không chia sẻ biến toàn cục.
 - State machine tường minh cho mode hệ thống & safe state (Lead viết); supervisor/monitor độc lập kênh 2.
 - Cấu hình & tham số hiệu chuẩn: dữ liệu có version + CRC, kiểm tra lúc khởi động.
+- Design pattern trong SI: bạn chốt trong SDD (ai tạo đối tượng — composition root, ai inject gì, callback hay hàng đợi, bảng
+  chuyển trạng thái); worker không tự chọn. Giới hạn theo skill Gemini `design-clean-code`: không singleton, DI qua constructor,
+  factory chỉ ở init, observer dung lượng cố định và không xuyên thread.
 
 # Checklist verify kiến trúc (62304 §5.3.6) — mỗi mục có bằng chứng
 Mọi SRS được phân bổ cho SI · mọi SI có class + lý do · interface giữa SI và với HW/SOUP được định nghĩa đầy đủ ·

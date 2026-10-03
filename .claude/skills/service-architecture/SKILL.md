@@ -11,6 +11,8 @@ description: Kiến trúc hệ nhiều service C++ (Linux/QNX) cho robot phẫu 
 | `<name>-service` | `src/ include/ test/ docs/` của service; `external/vsur-common`, `external/vsur-idl` (submodule ghim tag) | Kit AI cài vào mỗi repo |
 - Submodule/package ghim theo **tag**, không theo nhánh. Nâng phiên bản = task riêng + /impact (ảnh hưởng mọi service dùng nó).
 - `EXCLUDE_RX` của gate loại `external/` và `gen/` (code sinh từ IDL): chúng được verify ở repo/tool riêng.
+  Hệ quả với template của SDK (ADR-002): service instantiate template **nhận hành vi** (policy/traits/callable) với kiểu của
+  mình → code sinh ra không được `vsur-common` verify và nằm ngoài gate của service → phải có test trong repo service.
 - ID yêu cầu có tiền tố service để truy vết xuyên repo: `SRS-TELEOP-012`, `SI-KIN-03`; SYS/HAZ/RCM ở `vsur-system`.
   `trace.py` chạy trong từng repo; liên kết SYS ↔ SRS xuyên repo kiểm ở `vsur-system` (/trace tổng hợp trước release).
 

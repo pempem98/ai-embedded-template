@@ -1,6 +1,18 @@
 # Changelog — AI kit (cài vào dự án bằng scripts/install.sh)
 Mỗi phiên bản thay đổi skill/gate/script = thay đổi công cụ → dự án đánh giá tái validate (docs/01-plan §3) khi upgrade.
 
+## 2.4.0
+Skill & quy ước code (không đổi gate/ngưỡng). Prompt của mọi task code có thêm `design-clean-code` và `logging-impl`.
+- ADR-002 (Proposed) — luật dùng C++ template: phạm vi, ràng buộc `static_assert`, tách `<name>.hpp`/`<name>_impl.hpp`, explicit
+  instantiation trong test, instantiation ở repo khác. Cập nhật skill Gemini `cpp-embedded-standard`, `project-conventions`;
+  skill Claude `embedded-review`, `task-card`, `service-architecture`; mẫu `task.md`; coding standard Rev 0.2.
+- Skill Gemini mới **design-clean-code** (design pattern được phép/cấm: singleton, DI, factory, observer, state, strategy...;
+  clean code; cấm dọn dẹp ngoài phạm vi task). delegate.sh tự chèn cho mọi task implement/fix/test. Cập nhật `embedded-review`,
+  `architecture-design`, `task-card`, README, worker workflow.
+- Skill Claude mới **logging-diagnostics** (kênh log, đường RT không trễ, flight recorder, một binary cho debug & sản xuất, chống
+  rò rỉ PHI/secret/IP/core dump/cổng debug, rò rỉ tài nguyên) và skill Gemini **logging-impl** (delegate.sh tự chèn cho task code).
+  Cập nhật `embedded-review`, `medical-cybersecurity`, `/release-check`, CLAUDE.md, coding standard.
+
 ## 2.3.0
 Gate & merge (khắc phục điểm yếu tồn tại sau 2.2.1):
 - Bố cục mã nguồn cấu hình được: `SRC_DIRS_RX`, `TEST_DIRS_RX`, `EXCLUDE_RX` (code sinh IDL, submodule). Code nằm ngoài bố cục →

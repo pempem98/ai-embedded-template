@@ -17,6 +17,15 @@ description: Rubric review khó tính cho code C/C++ nhúng (MCU, Linux RT, QNX)
 - QNX: message không reply, blocking không timeout, InterruptAttach không được phép
 - Giao tiếp (task có `protocols:`): theo mục Review của skill `comm-protocols`
 - Đổi interface của lead, tắt warning, NOLINT/pragma/cast bịt lỗi, xóa/skip test, test có expected lấy từ output code
+- Template (ADR-002): tham số không ràng buộc bằng `static_assert`; test thiếu explicit instantiation (coverage chỉ thấy member
+  đã instantiate → 100% giả); instantiation nhận hành vi (policy/traits/callable) không có test riêng; SFINAE/đệ quy/CRTP
+  không có trong SDD; template mới hoặc tham số mới ngoài task card
+- Pattern/clean code (skill Gemini `design-clean-code`): singleton/service locator/biến toàn cục; phụ thuộc không qua constructor;
+  observer đăng ký lúc chạy, không cận dung lượng, callback block hoặc gọi xuyên thread; factory cấp phát sau init; pattern hay
+  lớp trừu tượng không có trong SDD/task card; magic number; tham số `bool` điều khiển hành vi; code bị comment, TODO, code chết;
+  refactor/đổi tên ngoài mục tiêu task
+- Logging: theo mục Review của skill `logging-diagnostics` (log gây trễ/bão log, rò rỉ secret/dữ liệu bệnh nhân/buffer thô,
+  code chỉ có ở bản debug, cửa hậu)
 - Tag truy vết sai/thiếu/gắn cho có; ID không có trong task card; `@req` chỉ ở header OWNER: lead
 - Đặt tên/cấu trúc sai skill Gemini `naming-conventions`: ngoài `vsur::<module>`, include guard/macro thiếu `VSUR_`,
   tên file ≠ class, thiếu hậu tố đơn vị, viết tắt ngoài danh sách (clang-tidy chỉ bắt được một phần)

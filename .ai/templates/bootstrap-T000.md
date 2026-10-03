@@ -10,7 +10,7 @@ requirements: SRS-000        # thay bằng SRS của common core (vd. xử lý l
 risk_controls:
 detailed_design: docs/04-detailed-design/SDD-common-core.md   # /design common-core trước khi start
 protocols:
-decisions: ADR-001
+decisions: ADR-001, ADR-002
 effort: high
 ---
 ## Mục tiêu
@@ -30,6 +30,9 @@ Polyrepo: task này chạy trong repo `vsur-common` (SI riêng, release & tag ri
   kết hợp với `ENABLE_COVERAGE`; `ENABLE_COVERAGE` → `--coverage`. Warning theo cpp-embedded-standard, `-Werror`.
 - Thư viện xuất ra target `vsur::common`, `vsur::osal`, `vsur::log` (+ `install(EXPORT)` / dùng được qua `add_subdirectory`).
 - Toàn bộ API theo `.agents/skills/project-conventions/SKILL.md` (ADR-001). Mọi header đánh dấu `// OWNER: lead`.
+- Template (ADR-002): `Result`, `StaticVector`, `SpscRing`, `TripleBuffer`, `SeqCounter` tách `<name>.hpp` (khai báo, contract,
+  `static_assert`) + `<name>_impl.hpp` (thân). `_impl.hpp` của `SpscRing`/`TripleBuffer` cũng `// OWNER: lead` (đồng bộ RT).
+  Bộ instantiation đại diện lấy từ SDD-common-core; mỗi cái có explicit instantiation definition trong file test.
 - `Result<T>`: lưu `T` và `Error` không cấp phát (union có kiểm soát hoặc `std::optional<T>` + Error), `value()` khi rỗng → `VSUR_ASSERT`.
 - `fatal_error()` trên host: ghi log + `std::abort()`; trên Linux/QNX/MCU: Lead định nghĩa trong task nền tảng riêng.
 - CRC preset ban đầu: `kCrc16Modbus`, `kCrc32IsoHdlc` (check value theo catalogue CRC chuẩn, có test).
@@ -38,4 +41,5 @@ Polyrepo: task này chạy trong repo `vsur-common` (SI riêng, release & tag ri
 - [ ] Build host không warning; gate Class C PASS (100% line + branch cho src/common, src/log).
 - [ ] `[asan-ubsan]` và `[tsan]` PASS trên Linux/WSL (SpscRing/TripleBuffer có test đa luồng chạy dưới TSan).
 - [ ] Test biên cho byte_order (offset/độ dài), CRC check value, seq_delta tại wrap, StaticVector/SpscRing đầy/rỗng.
+- [ ] Mỗi template có explicit instantiation cho bộ đại diện trong SDD; coverage tính trên `include/common/*_impl.hpp`.
 - [ ] Review độc lập + cross-review + kỹ sư ký trước khi task Gemini đầu tiên dùng các header này.

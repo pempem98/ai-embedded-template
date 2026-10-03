@@ -24,5 +24,11 @@ description: Chuẩn ngôn ngữ C++ nhúng an toàn cho thiết bị y tế (th
 - Số thực: không so sánh `==`; kiểm tra NaN/Inf ở đầu vào; giới hạn miền giá trị trước khi tính.
 - Concurrency: `std::atomic` với memory order tường minh; không data race; lock theo thứ tự cố định;
   không `std::thread` trực tiếp — dùng lớp OSAL của dự án (đặt policy/priority/affinity).
+- Template (ADR-002): chỉ để tổng quát theo kiểu dữ liệu/kích thước và chỉ khi task card yêu cầu — không tự tạo template,
+  không tự thêm tham số template. Ràng buộc mọi tham số bằng `static_assert` + `<type_traits>` có thông báo rõ.
+  Không SFINAE/`enable_if`, template đệ quy, template-template parameter, variadic, CRTP (cần → HỎI).
+  Thân template viết ở `<name>_impl.hpp` (được include ở cuối `<name>.hpp` của Lead); code khác không include `_impl.hpp`.
+  Test: explicit instantiation definition cho từng instantiation task card liệt kê (`template class vsur::SpscRing<TestPod, 8>;`)
+  rồi test đủ mọi member trên từng instantiation đó.
 - Hàm ≤ ~60 dòng, cyclomatic ≤ 10, độ sâu lồng ≤ 3. Một hàm một nhiệm vụ.
 - Doxygen cho API public: `@brief`, `@param`, `@return`, `@pre`, `@post`, tag truy vết.

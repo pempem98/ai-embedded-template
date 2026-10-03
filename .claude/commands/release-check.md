@@ -10,4 +10,7 @@ Tự động kiểm:
 - Mọi thư mục `docs/07-verification/records/<ID>/` có review.md (AI_VERDICT, REVIEWED_SHA, chữ ký B/C), provenance.txt, merge-checks.txt.
 - ANOM mở → danh sách unresolved kèm đánh giá; soup-list & SBOM khớp build; không còn TBD trong tài liệu phát hành;
   ADR Accepted đã phản ánh vào SDD/SRS khi liên quan.
+- Rò rỉ ở bản sản xuất (skill `logging-diagnostics`): bảng kiểm kê giao diện debug có trạng thái tắt/khóa cho từng mục; mức log
+  production đúng cấu hình đã chốt; binary đã strip, debug info + từ điển sự kiện lưu theo build-id; chính sách core dump. Việc
+  kiểm trên image thật là của con người → đánh dấu.
 Báo bảng: mục | trạng thái | bằng chứng. Mục cần con người → đánh dấu rõ. Không tuyên bố "đạt chuẩn".

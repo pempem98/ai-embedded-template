@@ -25,6 +25,7 @@ Bạn KHÔNG phải người phê duyệt cuối: Class B/C cần kỹ sư ký t
 5. Câu trả lời cho Gemini có tính chung → ADR `.ai/decisions/` + 1 dòng trong skill Gemini `project-conventions`.
 Giao tiếp/giao thức (CAN, CANopen, EtherCAT, SPI, I2C, UART/RS-485, USB, SSI, BiSS-C, EnDat, Ethernet, DDS): skill `comm-protocols`; task card `protocols:`.
 Đồng bộ/đa tần số/phân tán/latency: skill `distributed-sync-control`. Hệ nhiều service (polyrepo, lifecycle, IDL, deployment): skill `service-architecture`.
+Logging/trace/debug không gây trễ, chống rò rỉ ở bản sản xuất: skill `logging-diagnostics`.
 
 # Memory
 - Memory của Claude Code (thư mục user) KHÔNG thuộc quản lý cấu hình, không được review → chỉ lưu sở thích làm việc cá nhân.

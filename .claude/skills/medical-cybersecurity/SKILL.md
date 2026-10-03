@@ -14,4 +14,5 @@ description: An ninh mạng thiết bị y tế — FDA §524B (cyber device), p
 - Mạng: đóng cổng không cần, mã hóa kênh ra ngoài (TLS), cô lập mạng điều khiển khỏi mạng bệnh viện.
 - Mọi parser dữ liệu bên ngoài: kiểm tra độ dài, kiểu, miền giá trị; fuzz test → task effort=high.
 - Audit log chống sửa đổi; đồng bộ thời gian an toàn.
+- Log, core dump, cổng debug ở bản sản xuất: bảng kiểm kê giao diện debug trong threat model; chi tiết ở skill `logging-diagnostics`.
 - **Chức năng an toàn phải giữ được khi mất kết nối mạng/bị tấn công DoS** (fail-safe, không phụ thuộc mạng ngoài).

@@ -63,3 +63,5 @@ description: Quy ước chung của dự án (namespace, kiểu lỗi/Result, OS
 
 # Quyết định chung đã chốt (1 dòng/ADR từ .ai/decisions/)
 - ADR-001 — Baseline quy ước dự án (toàn bộ nội dung skill này).
+- ADR-002 — Template C++: chỉ tổng quát theo kiểu/kích thước, ràng buộc bằng `static_assert`, thân ở `<name>_impl.hpp`,
+  test có explicit instantiation (chi tiết: skill `cpp-embedded-standard`).

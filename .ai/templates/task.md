@@ -34,6 +34,7 @@ autofix_max:               # bỏ trống = theo config
 - Xử lý lỗi: <trả về gì, báo ai, có vào safe state không>
 - Bộ nhớ: <tĩnh, kích thước>
 - API OS/HAL được phép: <...>
+- Template (nếu có, ADR-002): <ràng buộc tham số (static_assert); instantiation phải test, vd. `SpscRing<TestPod, 2>`, `SpscRing<TestPod, 64>`>
 - Giao tiếp (nếu có protocols): <khung/bảng message, CRC (width, poly, init, refin/refout, xorout, check value), counter, timeout, ngưỡng lỗi & phản ứng>
 
 ## Đặc tả hành vi

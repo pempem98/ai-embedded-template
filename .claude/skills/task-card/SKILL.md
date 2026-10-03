@@ -29,6 +29,10 @@ Mẫu: `.ai/templates/task.md`; ví dụ đầy đủ: `.ai/templates/example-T0
 3. "Quyết định đã chốt" trả lời trước mọi câu Gemini sẽ hỏi: kiểu, đơn vị, hằng số, giới hạn, timeout,
    xử lý lỗi & safe state, context (ISR/thread/priority), bộ nhớ, API OS được dùng; giao tiếp: khung, CRC đầy đủ tham số, counter, timeout, ngưỡng lỗi.
    Quyết định dùng lại nhiều task → ADR + tham chiếu `decisions:` thay vì chép lại.
+   Cấu trúc: ai tạo đối tượng, phụ thuộc nào inject qua constructor, callback hay hàng đợi (worker theo `design-clean-code`,
+   không tự chọn pattern).
+   Task viết hoặc dùng template (ADR-002): mục "Template" liệt kê ràng buộc tham số và từng instantiation phải test; header
+   khai báo `<name>.hpp` do bạn viết trước, worker chỉ được `- tạo:`/`- sửa:` file `<name>_impl.hpp`.
 4. "Files được phép" chính xác — `check_scope.py` THỰC THI: chỉ dòng `- tạo:` / `- sửa:` / `- xóa:` được tính; glob và thư mục `/` được phép.
    Gemini không bao giờ được chạm scripts/, .ai/, .agents/, .gemini/, .claude/, cmake/, CMakeLists.txt gốc (kể cả khi liệt kê).
    Research/doc: liệt kê file ghi chú/tài liệu được tạo (vd. `- tạo: .ai/notes/T05-biss-encoder.md`).
