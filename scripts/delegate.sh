@@ -49,7 +49,12 @@ case "$TYPE" in
   doc)      AUTO+=" regulatory-doc-writer" ;;
 esac
 PROTOS="$(field protocols | tr ',' ' ')"
-if [[ -n "${PROTOS// /}" ]]; then AUTO+=" comm-safety"; for p in $PROTOS; do AUTO+=" proto-$p"; done; fi
+if [[ -n "${PROTOS// /}" ]]; then
+  AUTO+=" comm-safety"
+  [[ " $PROTOS " == *" canopen "* && " $PROTOS " != *" can "* ]] && PROTOS+=" can"   # CANopen luôn cần tầng link CAN
+  for p in $PROTOS; do AUTO+=" proto-$p"; done
+  [[ " $PROTOS " == *" ethercat "* || " $PROTOS " == *" canopen "* ]] && AUTO+=" sync-control-impl"
+fi
 AUTO+=" effort-$EFFORT"
 
 MISSING=""

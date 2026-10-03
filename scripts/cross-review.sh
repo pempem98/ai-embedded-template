@@ -40,10 +40,12 @@ LOG=".ai/logs/$ID.xreview.log"; : > "$LOG"
 head_snapshot
 agy_run "$AGY_MODEL_HIGH" plan "$LOG" \
   "Đọc TOÀN BỘ file .ai-out/xreview.prompt.md (dùng công cụ đọc file; KHÔNG chạy lệnh shell — mọi lệnh bị chặn) và review theo hướng dẫn trong đó. Trả lời bằng văn bản đúng định dạng, dòng đầu là XVERDICT:. Không tạo/sửa file."
+XRC=$?
 agy_field "$LOG" response > "$OUT.tmp"
 rm -f "$WT/.ai-out/xreview.prompt.md"
 
 head_guard || { echo "✖ Worktree bị đổi HEAD/nhánh khi cross-review — Lead kiểm tra trước khi review tiếp"; exit 4; }
+if (( XRC != 0 )); then rm -f "$OUT.tmp"; echo "✖ agy kết thúc lỗi (rc=$XRC) — không dùng kết quả cross-review lượt này"; exit 4; fi
 if [[ -n "$(git -C "$WT" status --porcelain)" ]]; then
   echo "⚠ Reviewer đã sửa worktree khi cross-review — hoàn tác:"; git -C "$WT" status --short | head -10
   git -C "$WT" checkout -q -- . && git -C "$WT" clean -fdq

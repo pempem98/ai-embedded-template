@@ -17,11 +17,11 @@ Mẫu: `.ai/templates/task.md`; ví dụ đầy đủ: `.ai/templates/example-T0
 | risk_controls | RCM-… | nếu task implement biện pháp kiểm soát |
 | detailed_design | docs/04-detailed-design/SDD-x.md | bắt buộc C, file phải có thật; được chèn vào prompt |
 | anomaly | ANOM-nnn | với type: fix |
-| protocols | can, ethercat, spi, i2c, uart, usb, ssi, biss-c, endat, ethernet | chèn `comm-safety` + `proto-<x>`; xem skill `comm-protocols` |
+| protocols | can, canopen, ethercat, spi, i2c, uart, usb, ssi, biss-c, endat, ethernet, dds | chèn `comm-safety` + `proto-<x>` (canopen tự kèm can; ethercat/canopen tự kèm `sync-control-impl`); xem skill `comm-protocols` |
 | decisions | ADR-nnn | file `.ai/decisions/ADR-nnn*.md` chèn nguyên văn vào prompt |
 | level | unit / integration / hil | type test; xem skill `integration-test` |
 | coverage_scope | file/thư mục | coverage tính trên phạm vi này; bắt buộc với type: test không sửa src |
-| effort, skills, autofix_max | | skills chỉ cần thêm ngoài skill tự động |
+| effort, skills, autofix_max | | skills chỉ cần thêm ngoài skill tự động: `linux-service-impl` (main/lifecycle/skeleton service), `sync-control-impl` (timestamp, stale, rate transition — khi không có ethercat/canopen) |
 
 # Nguyên tắc
 1. Một task = một unit/mục tiêu, diff < ~300 dòng.
@@ -36,3 +36,6 @@ Mẫu: `.ai/templates/task.md`; ví dụ đầy đủ: `.ai/templates/example-T0
 6. Không giao Gemini: safety supervisor core, state machine safe state, ISR/DMA, đồng bộ RT, cấu hình scheduler/partition,
    linker/startup/bootloader → task `owner: lead`.
 7. Task phụ thuộc → merge task trước rồi mới delegate task sau; task độc lập chạy song song (Bash background).
+   Task song song đã merge làm `INTEGRATION_BRANCH` tiến → merge.sh chạy gate trên kết quả merge; FAIL → cập nhật nhánh task, review lại.
+8. Service mới (polyrepo): mẫu `.ai/templates/bootstrap-service.md`; kiến trúc theo skill `service-architecture`,
+   timing/đồng bộ theo `distributed-sync-control` — chốt miền đồng hồ, max_age, chu kỳ/pha, QoS DDS trong "Quyết định đã chốt".

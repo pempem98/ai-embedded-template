@@ -84,14 +84,14 @@ Vì sao không "thả dự án vào workspace/":
 ## Skills
 **Claude** (`.claude/skills/`): iec62304-process, risk-management-iso14971, safety-architecture, task-card, delegate-gemini,
 embedded-review, effort-routing, traceability, soup-management, medical-cybersecurity, linux-rt-design, qnx-design,
-regulatory-docs, problem-resolution, **architecture-design** (+ references/diagrams), **requirements-engineering**, **comm-protocols** (+ references: can, ethercat, spi, i2c, uart, usb, ssi, biss-c, endat, ethernet),
-**integration-test**.
+regulatory-docs, problem-resolution, **architecture-design** (+ references/diagrams), **requirements-engineering**, **comm-protocols** (+ references: can, canopen, ethercat, spi, i2c, uart, usb, ssi, biss-c, endat, ethernet, dds),
+**integration-test**, **distributed-sync-control** (+ references: timing-budget, distributed-ssm), **service-architecture**.
 Phân vai skill Gemini: `cpp-embedded-standard`/`c-embedded-standard` = luật ngôn ngữ · `naming-conventions` = đặt tên/định dạng/commit · `safety-coding` = lập trình phòng vệ Class B/C.
 **Subagents**: fw-reviewer-low (sonnet), fw-reviewer-high (opus), fw-safety-assessor (opus), reg-doc-reviewer (sonnet).
 **Gemini qua agy** (`.agents/skills/`, luật chung `AGENTS.md`): worker-protocol, project-conventions, **naming-conventions**, build-protocol, traceability-tags, unit-test, cpp-embedded-standard,
 c-embedded-standard, safety-coding, linux-rt-impl, qnx-impl, regulatory-doc-writer, research, effort-low, effort-high,
 comm-safety, proto-can, proto-ethercat, proto-spi, proto-i2c, proto-uart, proto-usb, proto-ssi, proto-biss-c, proto-endat,
-proto-ethernet, cross-review.
+proto-ethernet, **proto-canopen**, **proto-dds**, **sync-control-impl**, **linux-service-impl**, cross-review.
 
 ## Memory
 Memory của Claude Code nằm ngoài repo, không thuộc quản lý cấu hình → chỉ cho sở thích cá nhân. Quyết định dự án → ADR/SDD/SRS trong repo.

@@ -56,7 +56,9 @@ seed_files() {
     find .ai/decisions -type f -name 'ADR-*.md'
   } | sort -u
 }
-sha() { sha256sum "$1" | cut -d' ' -f1 || { echo "✖ Không tính được SHA-256: $1" >&2; exit 1; }; }
+# sha chạy trong $(...) → exit chỉ thoát subshell; dùng sha_of để dừng thật ở shell chính
+sha() { local out; out="$(sha256sum "$1")" || return 1; out="${out%% *}"; [[ ${#out} -eq 64 ]] || return 1; echo "$out"; }
+sha_of() { local v; v="$(sha "$1")" || { echo "✖ Không tính được SHA-256: $1" >&2; exit 1; }; printf -v "$2" '%s' "$v"; }
 man_get() { [[ -f "$MAN" ]] && awk -v p="$1" '$2==p {print $1; exit}' "$MAN"; }
 put() {
   [[ $DRY -eq 1 ]] && return 0
@@ -68,9 +70,9 @@ NEWMAN="$(mktemp)"; declare -A CNT; LOG=()
 note() { CNT[$1]=$(( ${CNT[$1]:-0} + 1 )); [[ "$1" == SAME ]] || LOG+=("$1  $2"); }
 KIT_LIST="$(kit_files)"
 for f in $KIT_LIST; do
-  t="$DST/$f"; s_new="$(sha "$f")"
+  t="$DST/$f"; sha_of "$f" s_new
   if [[ ! -e "$t" ]]; then put "$f" "$t"; note NEW "$f"; echo "$s_new $f" >> "$NEWMAN"; continue; fi
-  s_t="$(sha "$t")"; s_m="$(man_get "$f")"
+  sha_of "$t" s_t; s_m="$(man_get "$f")"
   if [[ "$s_t" == "$s_new" ]]; then note SAME "$f"; echo "$s_new $f" >> "$NEWMAN"
   elif [[ -z "$s_m" ]]; then put "$f" "$t.vsur-kit"; note CONFLICT "$f (file có sẵn của dự án → xem $f.vsur-kit)"; echo "$s_new $f" >> "$NEWMAN"
   elif [[ "$s_t" == "$s_m" ]]; then put "$f" "$t"; note UPDATE "$f"; echo "$s_new $f" >> "$NEWMAN"
@@ -82,13 +84,19 @@ done
 if [[ -f "$MAN" ]]; then
   while read -r s p; do
     grep -qxF "$p" <<<"$KIT_LIST" && continue
-    if [[ -f "$DST/$p" && "$(sha "$DST/$p")" == "$s" ]]; then [[ $DRY -eq 0 ]] && rm -f "$DST/$p"; note REMOVED "$p"
+    if [[ -f "$DST/$p" ]] && sha_of "$DST/$p" s_old && [[ "$s_old" == "$s" ]]; then [[ $DRY -eq 0 ]] && rm -f "$DST/$p"; note REMOVED "$p"
     elif [[ -f "$DST/$p" ]]; then note OBSOLETE "$p (kit đã bỏ, dự án đã sửa — tự quyết xóa/giữ)"; fi
   done < "$MAN"
 fi
 for f in $(seed_files); do
   [[ -e "$DST/$f" ]] && continue; put "$f" "$DST/$f"; note SEED "$f"
 done
+# config.env là file dự án (không ghi đè) → báo khóa mới của kit mà dự án chưa có
+if [[ -f "$DST/.ai/config.env" ]]; then
+  for k in $(grep -oE '^[A-Z_][A-Z0-9_]*=' .ai/config.env | tr -d '=' | sort -u); do
+    grep -qE "^$k=" "$DST/.ai/config.env" || note CONFIGKEY "$k (kit có, .ai/config.env dự án chưa có — thêm thủ công)"
+  done
+fi
 # .gitignore: thêm dòng còn thiếu
 touch_gi=0
 while read -r line; do
@@ -102,8 +110,8 @@ if [[ $DRY -eq 0 ]]; then mkdir -p "$DST/.ai"; sort -k2 "$NEWMAN" > "$MAN"; fi
 rm -f "$NEWMAN"
 
 echo "== AI kit $(cat .ai/KIT_VERSION) → $DST $([[ $DRY -eq 1 ]] && echo '(DRY-RUN, không ghi gì)')"
-for k in NEW UPDATE SEED REMOVED LOCAL OBSOLETE CONFLICT GITIGNORE SAME; do [[ -n "${CNT[$k]:-}" ]] && printf '  %-9s %s\n' "$k" "${CNT[$k]}"; done
-printf '%s\n' "${LOG[@]}" | grep -E '^(CONFLICT|OBSOLETE|REMOVED|LOCAL)' | head -40 || true
+for k in NEW UPDATE SEED REMOVED LOCAL OBSOLETE CONFLICT CONFIGKEY GITIGNORE SAME; do [[ -n "${CNT[$k]:-}" ]] && printf '  %-9s %s\n' "$k" "${CNT[$k]}"; done
+printf '%s\n' "${LOG[@]}" | grep -E '^(CONFLICT|OBSOLETE|REMOVED|LOCAL|CONFIGKEY)' | head -40 || true
 if [[ -n "${CNT[CONFLICT]:-}" ]]; then echo "⚠ Gộp các file .vsur-kit vào file tương ứng rồi xóa .vsur-kit trước khi commit."; fi
 if [[ $UPGRADE -eq 0 ]]; then cat <<'EOF'
 Bước tiếp theo trong repo đích:

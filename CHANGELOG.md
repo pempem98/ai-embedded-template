@@ -1,6 +1,34 @@
 # Changelog — AI kit (cài vào dự án bằng scripts/install.sh)
 Mỗi phiên bản thay đổi skill/gate/script = thay đổi công cụ → dự án đánh giá tái validate (docs/01-plan §3) khi upgrade.
 
+## 2.3.0
+Gate & merge (khắc phục điểm yếu tồn tại sau 2.2.1):
+- Bố cục mã nguồn cấu hình được: `SRC_DIRS_RX`, `TEST_DIRS_RX`, `EXCLUDE_RX` (code sinh IDL, submodule). Code nằm ngoài bố cục →
+  `[layout] FAIL` (trước đây gate SKIP mọi bước và PASS rỗng khi code không ở `src|inc|include/`).
+- Header production thay đổi mà không có `.cpp` nào đổi → cppcheck/clang-tidy chấm mọi TU production (trước đây SKIP).
+- Banned-API: production theo class/platform; test chỉ luật chung (`banned:test`) — tránh FAIL giả do GoogleTest dùng container/new.
+- Sanitizer cho Class B/C: `SAN_CMD` (ASan+UBSan), `TSAN_CMD`, `REQUIRE_SAN`; CMake phải khai option `VSUR_SANITIZE` (kiểm qua
+  CMakeCache để không PASS giả). Windows host → SKIP (hoặc FAIL khi `REQUIRE_SAN=1`).
+- `BUILD_CMD_host` xuất `compile_commands.json`; `TIDY_CMD` FAIL nếu thiếu file này.
+- merge.sh: chỉ merge vào `INTEGRATION_BRANCH`; từ chối khi repo chính có thay đổi chưa commit ngoài `.ai/`; nhánh tích hợp đã tiến
+  so với base → chạy gate trên **kết quả merge** (bắt xung đột ngữ nghĩa giữa task song song); code + bằng chứng trong **một**
+  merge commit (trailer `Evidence:`), lỗi giữa chừng → hoàn tác để chạy lại; `provenance.txt` ghi `integration` + `post_merge_gate`.
+- cross-review.sh: agy kết thúc lỗi → không chấp nhận kết quả (đồng nhất với delegate.sh).
+- install.sh: lỗi SHA-256 dừng thật (bản 2.2.1 chỉ thoát subshell); báo `CONFIGKEY` khi kit có khóa config mà dự án chưa có.
+Line ending (Windows + Linux):
+- `.gitattributes`: `* text=auto eol=lf` + đuôi code/build/tài liệu rõ ràng + `binary` cho nhị phân → working tree luôn LF, không
+  phụ thuộc `core.autocrlf` từng máy (trước đây chỉ vài đuôi được ép LF → `.cpp/.hpp/CMakeLists.txt` bị đổi CRLF trên Windows).
+  File này là file dự án (install.sh không ghi đè): dự án cũ chép tay, rồi `git add --renormalize .` nếu cần.
+Skill (hệ nhiều service C++ trên Linux, DDS, CANopen, EtherCAT, đồng bộ/phân tán):
+- Claude: **distributed-sync-control** (+ references timing-budget, distributed-ssm), **service-architecture** (polyrepo, lifecycle,
+  IDL/ICD, deployment, restart policy, release bundle); comm-protocols thêm references **dds**, **canopen**; ethercat.md bổ sung DC
+  (master/bus shift, 0x092C, SYNC0 shift, 0x1C32/0x1C33, CSP 0x60C2); linux-rt-design thêm PTP/sanitizer/service.
+- Gemini: **proto-dds**, **proto-canopen**, **sync-control-impl**, **linux-service-impl**; proto-ethercat bổ sung DC/CSP.
+  delegate.sh: `protocols: canopen` tự kèm `proto-can`; ethercat/canopen tự kèm `sync-control-impl`.
+- Mẫu `.ai/templates/bootstrap-service.md`; bootstrap-T000 thêm CMake (compile_commands, `VSUR_SANITIZE`) và ghi chú polyrepo.
+Nâng cấp dự án: thêm thủ công các khóa mới vào `.ai/config.env` (install.sh liệt kê `CONFIGKEY`); gate script có giá trị mặc định
+cho config cũ, riêng `INTEGRATION_BRANCH` mặc định `main`.
+
 ## 2.2.1
 - Gate hỗ trợ giai đoạn bootstrap khi chưa có tool MISRA/MC/DC; bật `REQUIRE_MISRA=1`/`REQUIRE_MCDC=1` trước pilot/release để fail-closed.
 - Loại bỏ quote không an toàn khi chèn danh sách file vào lệnh gate; kiểm tra ID task, branch/base của worktree và lỗi non-zero từ `agy`.

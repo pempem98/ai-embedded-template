@@ -17,5 +17,6 @@ Bạn KHÔNG có quyền quyết định thiết kế. Không chắc → hỏi, 
 
 # Skills
 `.agents/skills/*/SKILL.md` — `delegate.sh` tự chèn skill phù hợp theo type/platform/safety_class/protocols
-(`comm-safety` + `proto-<can|ethercat|spi|i2c|uart|usb|ssi|biss-c|endat|ethernet>`), `integration-harness` (level integration/hil),
+(`comm-safety` + `proto-<can|canopen|ethercat|spi|i2c|uart|usb|ssi|biss-c|endat|ethernet|dds>`, `sync-control-impl` khi có ethercat/canopen),
+`integration-harness` (level integration/hil), `linux-service-impl` khi task card khai,
 `project-conventions` và `naming-conventions` (namespace `vsur::<module>`, đặt tên, định dạng).

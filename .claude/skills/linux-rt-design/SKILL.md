@@ -7,7 +7,10 @@ description: Quyết định thiết kế cho Embedded Linux real-time (PREEMPT_
 - Phân bổ CPU: `isolcpus`/`nohz_full`/`rcu_nocbs` cho lõi RT; IRQ affinity của NIC EtherCAT/CAN vào lõi RT; liệt kê lõi nào cho thread nào.
 - Bảng thread: tên, policy (SCHED_FIFO/SCHED_DEADLINE/OTHER), priority, CPU, chu kỳ, deadline, xử lý overrun.
 - IPC RT↔non-RT: SPSC lock-free / triple buffer / shared memory + seqlock — chỉ định cụ thể.
-- Đồng hồ: CLOCK_MONOTONIC; đồng bộ với EtherCAT DC nếu dùng.
+- Đồng hồ: CLOCK_MONOTONIC cho deadline cục bộ; đồng bộ với EtherCAT DC (master/bus shift) nếu dùng; timestamp liên node qua PTP
+  (`ptp4l`/`phc2sys` là SOUP, NIC hỗ trợ HW timestamping) — miền đồng hồ & hành vi mất sync: skill `distributed-sync-control`.
+- Service/process (lifecycle, systemd, restart policy, deployment): skill `service-architecture`.
+- Sanitizer: ASan/UBSan/TSan chạy unit test host trong gate (SAN_CMD/TSAN_CMD) — bắt buộc chạy gate trên Linux/WSL cho B/C.
 - Logging & lưu trữ: thread non-RT, ring buffer, không fsync trong đường RT.
 - Watchdog: phần cứng (`/dev/watchdog`) do supervisor kick; systemd `WatchdogSec` cho dịch vụ non-RT.
 - Bảo mật: chạy non-root, capabilities tối thiểu (`CAP_SYS_NICE`, `CAP_IPC_LOCK`), secure boot, read-only rootfs.

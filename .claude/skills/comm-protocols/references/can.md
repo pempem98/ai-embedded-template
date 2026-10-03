@@ -1,4 +1,5 @@
 # CAN / CAN FD / CANopen / CiA 402
+Tầng ứng dụng CANopen (NMT, PDO/SYNC, SDO, EMCY, CiA 302/402, bus load): xem `canopen.md`.
 
 ## Đặc điểm cần nhớ
 - Classic CAN: ID 11/29 bit, ≤ 8 byte, ≤ 1 Mbit/s, CRC-15. CAN FD: ≤ 64 byte, data phase thường 2–5 Mbit/s (tới ~8),

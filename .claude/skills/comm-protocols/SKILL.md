@@ -1,13 +1,14 @@
 ---
 name: comm-protocols
-description: Thiết kế & review giao tiếp/giao thức truyền thông trong robot phẫu thuật — CAN/CAN FD/CANopen/CiA 402, EtherCAT/FSoE, SPI, I2C, UART/RS-485/Modbus, USB, SSI, BiSS-C, EnDat 2.2, Ethernet/UDP/TSN/DDS. Chọn giao thức, lớp an toàn (black channel), timing, xử lý lỗi, hazard, bằng chứng test. Dùng khi thiết kế/viết SDD/task card/review code driver, fieldbus, encoder, cảm biến, link console↔cart, hoặc người dùng nhắc tên một giao thức.
+description: Thiết kế & review giao tiếp/giao thức truyền thông trong robot phẫu thuật — CAN/CAN FD/CANopen/CiA 402, EtherCAT/FSoE, SPI, I2C, UART/RS-485/Modbus, USB, SSI, BiSS-C, EnDat 2.2, Ethernet/UDP/TSN, DDS (QoS, IDL, discovery). Chọn giao thức, lớp an toàn (black channel), timing, xử lý lỗi, hazard, bằng chứng test. Dùng khi thiết kế/viết SDD/task card/review code driver, fieldbus, encoder, cảm biến, link console↔cart, hoặc người dùng nhắc tên một giao thức.
 ---
 # Cách dùng
 1. Đọc phần chung dưới đây, rồi CHỈ đọc `references/<giao-thức>.md` liên quan:
-   can · ethercat · spi · i2c · uart · usb · ssi · biss-c · endat · ethernet
+   can · canopen · ethercat · spi · i2c · uart · usb · ssi · biss-c · endat · ethernet · dds
+   Đồng bộ nhiều bus/node, miền đồng hồ, rate transition, latency end-to-end: skill `distributed-sync-control`.
 2. Thông số cụ thể (thanh ghi, timing, CRC poly, mode command) lấy từ datasheet/spec qua task `type: research` → `.ai/notes/`.
    Không tự đọc tài liệu dài, không đoán.
-3. Task card: `protocols: can, ethercat` → delegate.sh chèn skill Gemini `comm-safety` + `proto-<x>`. Chốt mọi tham số trong
+3. Task card: `protocols: canopen, ethercat, dds` → delegate.sh chèn skill Gemini `comm-safety` + `proto-<x>`. Chốt mọi tham số trong
    "Quyết định đã chốt" (mục Giao tiếp). Parser dữ liệu từ ngoài / fieldbus điều khiển → effort high.
 
 # Nguyên tắc chung — kênh không tin cậy (black channel, theo tinh thần IEC 61784-3 / EN 50159)
@@ -34,10 +35,11 @@ do dự án định nghĩa trong SDD). Chỉ dựa vào CRC phần cứng của 
 | Nhu cầu | Thường dùng |
 |---|---|
 | Vòng điều khiển khớp đồng bộ 1–8 kHz, nhiều trục | EtherCAT + DC, drive CiA 402 (CSP); an toàn qua FSoE |
-| Mạng phụ, cảm biến/actuator chậm, dụng cụ, I/O | CAN FD / CANopen (Safety: EN 50325-5) |
+| Mạng phụ, cảm biến/actuator chậm, dụng cụ, I/O | CAN FD / CANopen (Safety: EN 50325-5) — tính bus load trước (`canopen.md`) |
 | Encoder tuyệt đối | BiSS-C / EnDat 2.2 (có CRC, bit lỗi) ưu tiên hơn SSI (không CRC) |
 | Ngoại vi trên board | SPI (nhanh, xác định), I2C (chậm — cấu hình/giám sát, tránh đường RT) |
-| Console ↔ cart, video, dữ liệu lớn | Ethernet (UDP, TSN/VLAN, có thể DDS) + lớp E2E |
+| Service ↔ service, console ↔ cart (setpoint/trạng thái, không phải vòng nhanh) | DDS trên mạng riêng + lớp E2E (`dds.md`) |
+| Video, dữ liệu lớn | Ethernet (UDP, TSN/VLAN) + phát hiện đông cứng |
 | Dịch vụ, cập nhật, chẩn đoán | USB / UART — cô lập khỏi đường điều khiển (segregation trong SAD) |
 
 # Bằng chứng (docs/07)

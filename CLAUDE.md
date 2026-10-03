@@ -23,7 +23,8 @@ Bạn KHÔNG phải người phê duyệt cuối: Class B/C cần kỹ sư ký t
 3. `/review` ghi `.ai/reviews/<ID>.md` (REVIEWED_SHA) → kỹ sư ký (B/C) → `./scripts/merge.sh <ID>` (chạy lại gate, lưu bằng chứng docs/07)
 4. Định kỳ: `/status`, `/trace`, `/soup`, `/anomaly`, `/retro`, `/release-check` · Thay đổi: `/impact` · Tích hợp: `/integrate`
 5. Câu trả lời cho Gemini có tính chung → ADR `.ai/decisions/` + 1 dòng trong skill Gemini `project-conventions`.
-Giao tiếp/giao thức (CAN, EtherCAT, SPI, I2C, UART/RS-485, USB, SSI, BiSS-C, EnDat, Ethernet): skill `comm-protocols`; task card `protocols:`.
+Giao tiếp/giao thức (CAN, CANopen, EtherCAT, SPI, I2C, UART/RS-485, USB, SSI, BiSS-C, EnDat, Ethernet, DDS): skill `comm-protocols`; task card `protocols:`.
+Đồng bộ/đa tần số/phân tán/latency: skill `distributed-sync-control`. Hệ nhiều service (polyrepo, lifecycle, IDL, deployment): skill `service-architecture`.
 
 # Memory
 - Memory của Claude Code (thư mục user) KHÔNG thuộc quản lý cấu hình, không được review → chỉ lưu sở thích làm việc cá nhân.

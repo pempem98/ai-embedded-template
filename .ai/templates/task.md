@@ -10,12 +10,12 @@ requirements: SRS-000      # bắt buộc với B/C
 risk_controls:             # RCM-xxx nếu task implement biện pháp kiểm soát rủi ro
 detailed_design:           # bắt buộc với C: docs/04-detailed-design/SDD-xxx.md (file phải có thật)
 anomaly:                   # ANOM-xxx nếu type: fix
-protocols:                 # can, ethercat, spi, i2c, uart, usb, ssi, biss-c, endat, ethernet → chèn skill comm-safety + proto-<x>
+protocols:                 # can, canopen, ethercat, spi, i2c, uart, usb, ssi, biss-c, endat, ethernet, dds → chèn skill comm-safety + proto-<x>
 decisions:                 # ADR-xxx trong .ai/decisions/ được chèn nguyên văn vào prompt
 level:                     # type test: unit (mặc định) | integration | hil
 coverage_scope:            # file/thư mục tính coverage (bắt buộc với type: test không sửa src); trống = file thay đổi
 effort: low                # low | high
-skills:                    # skill Gemini bổ sung (skill theo type/platform/class/protocols đã tự động)
+skills:                    # skill Gemini bổ sung (tự động theo type/platform/class/protocols); vd. linux-service-impl, sync-control-impl
 autofix_max:               # bỏ trống = theo config
 ---
 ## Mục tiêu

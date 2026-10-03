@@ -13,7 +13,7 @@ description: Implement CAN / CAN FD / CANopen / CiA 402 (MCU HAL, Linux SocketCA
   nhận error frame qua `CAN_RAW_ERR_FILTER` (mask theo task card); socket non-blocking hoặc chờ có timeout;
   không gọi trong vòng RT nếu task card không cho phép.
 - QNX: API driver CAN của BSP theo task card. MCU: HAL FDCAN/bxCAN/MCAN của dự án; ISR do Lead viết.
-- CANopen: OD/PDO mapping theo task card; heartbeat consumer timeout; SDO luôn có timeout & xử lý abort code; NMT chỉ theo chỉ định.
+- CANopen: theo skill `proto-canopen` (NMT, heartbeat, SYNC/PDO, SDO, EMCY, cấu hình DCF).
 - CiA 402 (drive): chỉ gửi controlword theo state machine Lead cung cấp; đọc statusword trước khi chuyển;
   không tự chuyển trạng thái drive, không tự clear fault.
 - Test: ID/DLC sai, DLC FD không hợp lệ, counter lặp/nhảy, timeout chu kỳ, bus-off & error passive (mock), TX đầy.

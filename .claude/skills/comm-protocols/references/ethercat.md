@@ -13,6 +13,18 @@
 ## Chốt trong SDD
 - Master stack (SOUP) & phiên bản: IgH EtherLab (Linux), SOEM, acontis EC-Master (Linux/QNX)...; ENI/ESI là configuration item.
 - Chu kỳ, DC mode, SYNC0 shift; thread cyclic (CPU, priority — skill linux-rt-design/qnx-design); master bám DC hay ngược lại.
+- DC chi tiết (skill `distributed-sync-control`):
+  - **Master shift**: thread cyclic của master điều chỉnh pha/chu kỳ bám reference clock (jitter bus tốt nhất, đồng hồ hệ thống tự do).
+    **Bus shift**: reference clock bị kéo theo thời gian master (cần đồng hồ master ổn định, vd. khi master bám PTP). Chọn một, ghi ADR.
+  - Khởi động: đo propagation delay, bù offset, bù drift tĩnh (nhiều khung ARMW) TRƯỚC khi vào SAFE-OP/OP; chỉ vào OP khi
+    |System Time Difference| (0x092C) < ngưỡng ở mọi slave DC.
+  - Vận hành: mỗi chu kỳ cập nhật application time + đồng bộ reference/slave clocks đúng điểm (vd. IgH
+    `ecrt_master_application_time`, `ecrt_master_sync_reference_clock`, `ecrt_master_sync_slave_clocks`); giám sát
+    0x092C định kỳ, SM event missed / sync error counter (0x1C32/0x1C33: sync type, cycle time, shift time, các bộ đếm lỗi).
+  - SYNC0 shift: khung output phải tới mọi slave trước SYNC0 → shift ≥ thời gian gửi khung + truyền qua chuỗi + margin;
+    input latch tại SYNC0/SYNC1 đọc ở chu kỳ sau → trễ 1 chu kỳ đưa vào ngân sách timing.
+  - CiA 402 CSP: 0x60C2 (interpolation time period) = chu kỳ bus; target cập nhật mỗi chu kỳ; hành vi drive khi lỡ một chu kỳ
+    (ngoại suy/giữ/fault) lấy từ manual drive (task research) và ghi SDD; following error window 0x6065.
 - WKC mong đợi từng domain; số chu kỳ sai liên tiếp N cho phép → safe state.
 - Phản ứng khi slave rời OP / AL status code ≠ 0 / link down / topology thay đổi; có cho phép tự đưa lại OP không.
 - CiA 402: mode (CSP thường dùng cho teleop), giới hạn bước vị trí/vận tốc, quick stop, fault reaction; logic chuyển trạng thái do Lead.

@@ -52,3 +52,6 @@ Trách nhiệm thuộc về kỹ sư có năng lực được chỉ định.
 | 11 | Điều khoản dữ liệu của nhà cung cấp AI, phạm vi mã nguồn được đưa vào prompt | IT/Legal | TBD |
 | 12 | Kế hoạch pilot: module, tiêu chí thành công (dùng `.ai/metrics.csv`), giới hạn phạm vi | SW Lead | TBD |
 | 13 | Toolchain files, `.clang-tidy`/`.clang-format` (bản khởi đầu đã có, cần chỉnh theo dự án) | SW Lead | đang làm |
+| 14 | Sanitizer (ASan/UBSan/TSan) bắt buộc với B/C; gate chạy trên Linux/WSL | SW Lead + QA | `REQUIRE_SAN=0` — bật khi môi trường gate là Linux/WSL |
+| 15 | Bố cục mã nguồn & phần loại trừ khỏi gate (code sinh IDL, submodule) | SW Lead | `SRC_DIRS_RX`/`TEST_DIRS_RX`/`EXCLUDE_RX`; code ngoài bố cục → gate FAIL |
+| 16 | Nhánh tích hợp; gate trên kết quả merge khi nhánh đã tiến (task song song) | SW Lead + QA | `INTEGRATION_BRANCH="main"`, merge.sh tự chạy |
