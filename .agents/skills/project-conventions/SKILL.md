@@ -54,7 +54,11 @@ description: Quy ước chung của dự án (namespace, kiểu lỗi/Result, OS
 - CRC (`crc.hpp`): `vsur::crc::compute(const CrcParams&, ConstByteSpan) -> std::uint32_t`; `CrcParams{width, poly, init, refin,
   refout, xorout, check}`; preset dùng chung đặt tên `kCrc<Tên chuẩn>` (vd. `kCrc16Modbus`) — preset mới do Lead thêm. Test bằng `check`.
 - Sequence counter (`sequence.hpp`): `vsur::SeqCounter<UInt>`; `vsur::seq_delta(prev, cur)` số học modulo; không so sánh `<` trực tiếp.
-- Lớp E2E cho message an toàn: TBD — định nghĩa theo từng interface trong SDD/ADR (header, CRC preset, timeout). Chưa có → HỎI.
+- Lớp E2E cho message an toàn (ADR-003) — `include/comm/`, namespace `vsur::comm`: một header `E2eHeader` chung (`data_id`,
+  `epoch`, `seq`, `timestamp_us`, `source_id`, `length`, `clock_domain`, `e2e_version`, `crc`), CRC preset `kCrc32Autosar` trên
+  header + mã hóa chuẩn tắc của payload. Gửi: `E2eProtector`. Nhận: `E2eChecker::check()` / `check_timeout()` rồi `ErrorMonitor`.
+  Tham số từng message lấy từ `E2eProfile` sinh từ bảng ICD (`vsur-idl`) — không tự đặt `max_age`, ngưỡng, `data_id`.
+  `epoch` do ssm-service cấp; `epoch = 0` không dùng cho điều khiển. Không tự định nghĩa header/CRC/counter khác. Header chưa có → HỎI.
 
 # Test
 - C++: GoogleTest + GoogleMock. C (MCU): Unity. Không đổi framework.
@@ -65,3 +69,6 @@ description: Quy ước chung của dự án (namespace, kiểu lỗi/Result, OS
 - ADR-001 — Baseline quy ước dự án (toàn bộ nội dung skill này).
 - ADR-002 — Template C++: chỉ tổng quát theo kiểu/kích thước, ràng buộc bằng `static_assert`, thân ở `<name>_impl.hpp`,
   test có explicit instantiation (chi tiết: skill `cpp-embedded-standard`).
+- ADR-003 — Lớp E2E chung, `E2eChecker`/`ErrorMonitor`, wrapper DDS `SafeWriter<T>`/`SafeReader<T>` (mục Tiện ích giao tiếp).
+- ADR-004 — Thay đổi xuyên service đi qua change request `CR-nnn` ở `vsur-system`; không sửa repo khác; task card `change:`,
+  trailer commit `Change: CR-nnn`.

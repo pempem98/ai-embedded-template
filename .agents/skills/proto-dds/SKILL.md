@@ -12,9 +12,11 @@ description: Implement giao tiếp DDS (DataWriter/DataReader, WaitSet, QoS prof
 - Nhận: ưu tiên WaitSet trong thread OSAL được chỉ định; listener (nếu task card cho) chỉ copy dữ liệu vào SPSC/triple buffer rồi return
   — không xử lý logic, không block, không gọi logger đồng bộ trong callback.
 - Mỗi mẫu: kiểm `SampleInfo.valid_data` TRƯỚC khi đọc; xử lý `instance_state` NOT_ALIVE_DISPOSED / NO_WRITERS theo task card;
-  rồi kiểm E2E (source_id, seq qua `vsur::seq_delta`, tuổi = now − timestamp cùng miền đồng hồ ≤ max_age, CRC) theo comm-safety.
+  rồi kiểm E2E bằng `vsur::comm::E2eChecker` (ADR-003) theo comm-safety. Topic an toàn: dùng wrapper `SafeWriter<T>` /
+  `SafeReader<T>` của `vsur-idl` qua interface `Publisher<T>` / `Subscriber<T>` — không gọi API vendor trực tiếp, không tự viết
+  hàm mã hóa payload để tính CRC (hàm chuẩn tắc của từng kiểu nằm ở `vsur-idl`).
 - Thread RT (fieldbus loop) KHÔNG gọi API DDS: chỉ đọc/ghi SPSC/triple buffer; thread bridge do task card chỉ định gọi DDS.
-- Gửi: điền header E2E (seq tăng, timestamp, source_id, CRC) trước `write`; kiểm kết quả `write` (timeout/out of resources là lỗi,
+- Gửi: header E2E do `E2eProtector`/`SafeWriter<T>` điền (không tự điền `seq`/`epoch`/CRC) trước `write`; kiểm kết quả `write` (timeout/out of resources là lỗi,
   không retry vô hạn). Liveliness MANUAL: chỉ `assert_liveliness`/write khi vòng xử lý thật sự tiến triển.
 - Kiểu dữ liệu bounded: không gán vượt bound (kiểm độ dài trước), không dùng `std::string`/`std::vector` của API ở đường Class C
   nếu task card không cho.

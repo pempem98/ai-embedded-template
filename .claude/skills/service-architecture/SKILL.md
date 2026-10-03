@@ -25,10 +25,23 @@ description: Kiến trúc hệ nhiều service C++ (Linux/QNX) cho robot phẫu 
 # Interface (ICD) — `vsur-idl`
 - Mỗi topic: tên, kiểu IDL, producer/consumer, chu kỳ/deadline, QoS profile, class dữ liệu (safety/non-safety), lớp E2E, max_age.
 - Kiểu dữ liệu bounded (`sequence<T, N>`, `string<N>`), `@final` cho dữ liệu an toàn; mọi message an toàn có header E2E
-  (source_id, seq, timestamp + miền đồng hồ, CRC) — định nghĩa một lần trong `vsur-idl`.
+  theo ADR-003 (`data_id`, `epoch`, `seq`, `timestamp_us`, `source_id`, `length`, `clock_domain`, `e2e_version`, `crc`) — định
+  nghĩa một lần trong `vsur-idl`, cùng `E2eProfile` từng topic, hàm mã hóa chuẩn tắc và wrapper `SafeWriter<T>`/`SafeReader<T>`.
+  `epoch` do ssm-service cấp khi cho service vào ACTIVE và công bố để bên nhận so khớp.
 - Version: semver của `vsur-idl` + hash nội dung IDL/QoS nhúng vào binary; service công bố hash trong `service_status`;
   SSM từ chối ACTIVE khi hash không khớp ma trận tương thích.
 - Đổi interface = task ở `vsur-idl` + task cập nhật ở mọi service consumer; /impact bắt buộc.
+
+# Thay đổi xuyên service (ADR-004)
+- Bạn chỉ làm việc trong repo đang đứng: không viết task card, không delegate, không sửa code ở repo service khác — phân loại,
+  review và chữ ký của một software item thuộc người phụ trách item đó.
+- Thay đổi chạm ≥ 2 repo hoặc đổi interface chung → bản ghi `CR-nnn` ở `vsur-system/docs/12-change-requests/` (mẫu
+  `docs/templates/change-request-template.md`); con người phê duyệt và đóng CR.
+- Luồng: `/impact` tại repo khởi xướng → lập & duyệt CR → đổi `vsur-idl`/`vsur-common`, các consumer cùng review, đánh tag →
+  mỗi người phụ trách tự `/impact` và tự tạo task ở repo mình (`change: CR-nnn`) → `vsur-system`: ma trận tương thích, manifest,
+  `/integrate`, `/trace`, đóng CR.
+- Phụ thuộc giữa repo thể hiện bằng tag, không khóa chéo bằng script: làm trên tag interface mới với fake cho phía đối diện.
+- Phá vỡ tương thích: CR ghi các tổ hợp phiên bản không được chạy chung → ma trận tương thích.
 
 # Lifecycle & vận hành (chốt trong SAD/SDD, worker dùng skill `linux-service-impl`)
 - Lifecycle cục bộ: UNCONFIGURED → INACTIVE → ACTIVE ↔ SAFE → (ERROR); chuyển theo lệnh ssm-service

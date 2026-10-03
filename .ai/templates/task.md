@@ -12,6 +12,7 @@ detailed_design:           # bắt buộc với C: docs/04-detailed-design/SDD-x
 anomaly:                   # ANOM-xxx nếu type: fix
 protocols:                 # can, canopen, ethercat, spi, i2c, uart, usb, ssi, biss-c, endat, ethernet, dds → chèn skill comm-safety + proto-<x>
 decisions:                 # ADR-xxx trong .ai/decisions/ được chèn nguyên văn vào prompt
+change:                    # CR-xxx nếu task thuộc thay đổi xuyên service (ADR-004)
 level:                     # type test: unit (mặc định) | integration | hil
 coverage_scope:            # file/thư mục tính coverage (bắt buộc với type: test không sửa src); trống = file thay đổi
 effort: low                # low | high
@@ -35,7 +36,8 @@ autofix_max:               # bỏ trống = theo config
 - Bộ nhớ: <tĩnh, kích thước>
 - API OS/HAL được phép: <...>
 - Template (nếu có, ADR-002): <ràng buộc tham số (static_assert); instantiation phải test, vd. `SpscRing<TestPod, 2>`, `SpscRing<TestPod, 64>`>
-- Giao tiếp (nếu có protocols): <khung/bảng message, CRC (width, poly, init, refin/refout, xorout, check value), counter, timeout, ngưỡng lỗi & phản ứng>
+- Giao tiếp (nếu có protocols): <khung/bảng message, CRC (width, poly, init, refin/refout, xorout, check value), counter, timeout, ngưỡng lỗi & phản ứng;
+  message an toàn của dự án: chỉ nêu `E2eProfile` và ngưỡng `ErrorMonitor` (ADR-003)>
 
 ## Đặc tả hành vi
 <từng hàm: input → output, lỗi>

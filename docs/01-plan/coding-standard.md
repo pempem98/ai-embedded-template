@@ -3,6 +3,7 @@
 |---|---|---|---|---|
 | 0.1 | | | Initial | Draft |
 | 0.2 | 2026-10-03 | Lead (AI) | Thêm luật dùng C++ template (ADR-002) vào `cpp-embedded-standard`; thêm `design-clean-code`, `logging-impl` | Draft |
+| 0.3 | 2026-10-03 | Lead (AI) | Lớp E2E chung (ADR-003) trong `comm-safety`, `proto-dds`; ID `CR-nnn` và trailer `Change:` (ADR-004) trong `naming-conventions` | Draft |
 
 Áp dụng cho mọi mã nguồn sản phẩm, bất kể do kỹ sư, Claude hay Gemini viết. Các file dưới đây là **nguồn kiểm soát**
 (quản lý cấu hình trong git); tài liệu này chỉ mô tả phạm vi, cách thực thi và quy trình thay đổi.

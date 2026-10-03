@@ -15,6 +15,9 @@ CRC phần cứng của bus KHÔNG thay thế kiểm tra ở tầng ứng dụng
 6. Tuổi dữ liệu / timestamp (stale)
 7. Miền giá trị & plausibility
 Sai ở bước nào → KHÔNG dùng dữ liệu, trả lỗi đúng loại + tăng counter lỗi tương ứng.
+Message an toàn do dự án định nghĩa (ADR-003): bước 3, 5, 6 và kiểm `data_id`/`source_id`/`epoch` làm bằng `vsur::comm::E2eChecker`
+với `E2eProfile` task card chỉ định; đếm lỗi & ngưỡng bằng `ErrorMonitor` — KHÔNG viết lại CRC/counter/kiểm tuổi riêng. Bước 1, 2,
+4, 7 vẫn do code của bạn làm. Giao thức có lớp an toàn chuẩn (FSoE, CANopen Safety, BiSS safety): dùng nguyên, không bọc thêm E2E.
 
 # Quy tắc code
 - KHÔNG `memcpy`/cast buffer vào struct để giải mã, không dựa vào layout/packing/endianness của compiler.

@@ -20,7 +20,10 @@ description: Thiết kế & review giao tiếp/giao thức truyền thông trong
 | Giả mạo nguồn (masquerade) | ID nguồn/đích, kiểu message, version trong payload |
 | Sai độ dài/kiểu | Kiểm tra length/type/version/miền giá trị trước khi dùng |
 Class C: dữ liệu an toàn đi qua lớp safety protocol (FSoE, CANopen Safety EN 50325-5, BiSS/EnDat safety profile, hoặc lớp E2E
-do dự án định nghĩa trong SDD). Chỉ dựa vào CRC phần cứng của bus là KHÔNG đủ.
+của dự án). Chỉ dựa vào CRC phần cứng của bus là KHÔNG đủ.
+Lớp E2E của dự án đã chốt ở ADR-003: một header chung, `E2eChecker` + `ErrorMonitor` trong `vsur-common`, wrapper DDS typed trong
+`vsur-idl`; task card chỉ nêu `E2eProfile` của message, không định nghĩa lại header/CRC. Không gom khung riêng của từng giao thức,
+không tạo lớp transport chung cho mọi bus, không bọc E2E lên FSoE / CANopen Safety / BiSS safety.
 
 # Quyết định phải chốt trong SDD / task card (Gemini không tự chọn)
 - Vai trò (master/slave, host/device), tốc độ, mode, định dạng khung, endianness, đơn vị & scaling từng trường

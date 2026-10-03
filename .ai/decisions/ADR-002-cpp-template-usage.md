@@ -1,6 +1,6 @@
 # ADR-002 — Dùng C++ template trong SDK (`vsur-common`) và service
-Status: Proposed
-Date: 2026-10-03   Phạm vi: toàn dự án (code C++)   Người quyết định: Lead (đề xuất) — chờ người dùng chốt
+Status: Accepted
+Date: 2026-10-03   Phạm vi: toàn dự án (code C++)   Người quyết định: Lead (đề xuất) — người dùng chốt 2026-10-03
 
 ## Bối cảnh
 SDK dùng chung dự kiến viết nhiều dưới dạng template (container, Result, tiện ích giao tiếp). Template có ba hệ quả mà kit chưa xử lý:

@@ -19,6 +19,7 @@ Mẫu: `.ai/templates/task.md`; ví dụ đầy đủ: `.ai/templates/example-T0
 | anomaly | ANOM-nnn | với type: fix |
 | protocols | can, canopen, ethercat, spi, i2c, uart, usb, ssi, biss-c, endat, ethernet, dds | chèn `comm-safety` + `proto-<x>` (canopen tự kèm can; ethercat/canopen tự kèm `sync-control-impl`); xem skill `comm-protocols` |
 | decisions | ADR-nnn | file `.ai/decisions/ADR-nnn*.md` chèn nguyên văn vào prompt |
+| change | CR-nnn | task thuộc thay đổi xuyên service (ADR-004); chỉ để truy vết, script không kiểm; commit thêm trailer `Change: CR-nnn` |
 | level | unit / integration / hil | type test; xem skill `integration-test` |
 | coverage_scope | file/thư mục | coverage tính trên phạm vi này; bắt buộc với type: test không sửa src |
 | effort, skills, autofix_max | | skills chỉ cần thêm ngoài skill tự động: `linux-service-impl` (main/lifecycle/skeleton service), `sync-control-impl` (timestamp, stale, rate transition — khi không có ethercat/canopen) |

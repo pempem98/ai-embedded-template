@@ -55,7 +55,7 @@ Hậu tố `_t` chỉ dùng trong code MCU (POSIX dành riêng `_t` trên Linux/
 `TEST(VelocityLimiter, ClampsCommandAboveMax)` — `<Unit PascalCase>, <Hành vi PascalCase: Hàm + Điều kiện + Kết quả>`.
 
 # ID & tên file tài liệu
-Task `T001` · `UN-nnn` `SYS-nnn` `SRS-nnn` `HAZ-nnn` `RCM-nnn` `SI-nnn` `ADR-nnn` `DEV-nnn` `ANOM-nnn` (3 chữ số trở lên, không tái sử dụng) ·
+Task `T001` · `UN-nnn` `SYS-nnn` `SRS-nnn` `HAZ-nnn` `RCM-nnn` `SI-nnn` `ADR-nnn` `DEV-nnn` `ANOM-nnn` `CR-nnn` (3 chữ số trở lên, không tái sử dụng) ·
 `SDD-<unit-kebab>.md` · `ADR-nnn-<tieu-de-kebab>.md` · nhánh `task/<ID>`.
 
 # Commit message (Conventional Commits + truy vết)
@@ -69,4 +69,4 @@ Refs: SRS-041, RCM-012
 ```
 type: `feat` `fix` `test` `docs` `refactor` `perf` `build` `ci` `chore` `revert` `safety` (thay đổi risk control) `merge` (do merge.sh).
 scope: module hoặc SI (`teleop`, `si-012`, `records`). Trailer `Task:` bắt buộc cho commit thuộc task; `Refs:` khi chạm SRS/RCM;
-`Anomaly: ANOM-nnn` cho fix. Git hook `scripts/git-hooks/commit-msg` kiểm tra định dạng. Worker KHÔNG tự commit (delegate.sh commit theo mẫu này).
+`Anomaly: ANOM-nnn` cho fix; `Change: CR-nnn` cho task thuộc change request xuyên service. Git hook `scripts/git-hooks/commit-msg` kiểm tra định dạng. Worker KHÔNG tự commit (delegate.sh commit theo mẫu này).

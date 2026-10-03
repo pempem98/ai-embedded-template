@@ -1,6 +1,17 @@
 # Changelog — AI kit (cài vào dự án bằng scripts/install.sh)
 Mỗi phiên bản thay đổi skill/gate/script = thay đổi công cụ → dự án đánh giá tái validate (docs/01-plan §3) khi upgrade.
 
+## 2.5.0
+ADR-002 Accepted. Hai ADR mới (Accepted) và skill theo đó; không đổi gate/ngưỡng/script.
+- ADR-003 — lớp E2E chung: header 30 byte (`data_id`, `epoch`, `seq`, `timestamp_us`, `source_id`, `length`, `clock_domain`,
+  `e2e_version`, `crc`), CRC `kCrc32Autosar` trên mã hóa chuẩn tắc, `epoch` do ssm-service cấp; `E2eProtector`/`E2eChecker`/
+  `ErrorMonitor` trong `vsur-common`; wrapper DDS `SafeWriter<T>`/`SafeReader<T>` trong `vsur-idl`. Cập nhật skill Gemini
+  `comm-safety`, `proto-dds`, `project-conventions`; skill Claude `comm-protocols`, `service-architecture`; mẫu `task.md`.
+- ADR-004 — change request xuyên service (`CR-nnn` ở `vsur-system`, mỗi repo tự làm task của mình, không khóa chéo bằng script).
+  Mẫu `docs/templates/change-request-template.md`; trường task card `change:`, trailer commit `Change:`; cập nhật
+  `service-architecture`, `task-card`, `naming-conventions`, `/impact`. Coding standard Rev 0.3.
+Nâng cấp dự án: `project-conventions` là file dự án (install.sh không ghi đè) — chép tay mục E2E và ba dòng ADR-002..004.
+
 ## 2.4.0
 Skill & quy ước code (không đổi gate/ngưỡng). Prompt của mọi task code có thêm `design-clean-code` và `logging-impl`.
 - ADR-002 (Proposed) — luật dùng C++ template: phạm vi, ràng buộc `static_assert`, tách `<name>.hpp`/`<name>_impl.hpp`, explicit

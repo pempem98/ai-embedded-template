@@ -8,3 +8,5 @@ Thay đổi: $ARGUMENTS — skills `traceability`, `risk-management-iso14971`, `
 3. Đánh giá: có ảnh hưởng risk control hiện có / tạo chuỗi nguy hiểm mới? → nếu có: chạy /hazard, giao `fw-safety-assessor`.
 4. Regression set: unit test (@verifies các ID trên), integration/HIL liên quan (skill `integration-test`).
 5. Kết quả: bảng ảnh hưởng (mục | ID | hành động) + task card đề xuất. Quyết định chấp nhận thay đổi là của người dùng.
+6. Thay đổi chạm repo khác hoặc interface chung (`vsur-idl`, `vsur-common`): liệt kê "repo bị ảnh hưởng | việc cần làm" và đề xuất
+   lập `CR-nnn` ở `vsur-system` (ADR-004, mẫu `docs/templates/change-request-template.md`). Không tạo task cho repo khác.
